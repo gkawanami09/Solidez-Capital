@@ -91,7 +91,7 @@ def logout():
 
 
 @app.route('/editar', methods=['GET', 'POST'])
-def editar_usuario():
+def editar():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
@@ -141,5 +141,26 @@ def editar_usuario():
         flash('Perfil atualizado com sucesso!' , 'success')
         return redirect(url_for('painel'))
     return render_template('ediatr.html', usuario=usuario)
+
+
+@app.route('/usuario')
+def usuario():
+    if 'usuario_logado' not in session:
+        return redirect(url_for('login'))
+
+
+    usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
+
+    if not usuario:
+        flash("Usuário não encontrado!", 'danger')
+        return redirect(url_for('painel'))
+
+
+    usuario_exibicao = usuario.copy()
+
+
+
+    return render_template('usuario.html', usuario=usuario_exibicao)
+
 
 
