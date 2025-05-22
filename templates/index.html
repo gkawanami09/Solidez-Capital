@@ -9,14 +9,14 @@
 <body>
   <header>
     <div class="container">
-      <a href="index.html">
+      <a href="{{ url_for('index') }}">
         <img src="../static/img/logo.png" alt="Logo da Solidez Capital" />
       </a>
       <nav>
         <a href="#quem_somos">Quem Somos?</a>
         <a href="#dicas">Dicas</a>
         <a href="#beneficios">Benefícios</a>
-        <a class="login" href="/login">Login</a>
+        <a class="{{ url_for('login') }}" href="/login">Login</a>
       </nav>
     </div>
   </header>
@@ -100,7 +100,7 @@
           <a href="#quem_somos">Quem Somos?</a>
           <a href="#dicas">Dicas</a>
           <a href="#beneficios">Benefícios</a>
-          <a class="login" href="/login">Login</a>
+          <a class="{{ url_for('login') }}" href="/login">Login</a>
         </nav>
       </div>
     </footer>
