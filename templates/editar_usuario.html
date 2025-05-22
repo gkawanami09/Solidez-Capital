@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidez Capital - Editar Usuário</title>
+</head>
+<body>
+    <header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+        <div class="container">
+            <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
+            <nav>
+                <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
+                <a href="{{ url_for('painel') }}">Painel</a>
+                <a href="#">Transações</a>
+                <a href="#">Emergência</a>
+                <a href="#">Investimentos</a>
+            </nav>
+        </div>
+    </header>
+
+    <section>
+        <div>
+            <h1>Editar Usuário</h1>
+            <form action="{{ url_for('editar_usuario') }}" method="POST">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required> <br>
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" name="cpf" value="{{ usuario.cpf }}" required maxlength="11" minlength="11"> <br>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ usuario.email }}" required> <br>
+                <label for="nova_senha">Nova Senha (deixe em branco para não alterar)</label>
+                <input type="password" id="nova_senha" name="nova_senha" placeholder="Digite a nova Senha:" minlength="8" maxlength="20"><br>
+                <label for="confirmar_senha">Confirme a Nova Senha</label>
+                <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme a nova Senha" minlength="8" maxlength="20">
+                <div class="buttons">
+                    <button type="submit">Confirmar</button>
+                    <a href="{{ url_for('visualizar_usuario') }}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
+            <nav>
+                <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
+                <a href="{{ url_for('painel') }}">Painel</a>
+                <a href="#">Transações</a>
+                <
