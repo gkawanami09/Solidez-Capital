@@ -24,6 +24,11 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'usuario_logado' in session:
+        return redirect(url_for('painel'))
+
+
+
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
@@ -85,7 +90,7 @@ def logout():
 
 
 
-@app.route('/editar', mehtods=['GET', 'POST'])
+@app.route('/editar', methods=['GET', 'POST'])
 def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
