@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solidez Capital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <body>
@@ -14,25 +15,30 @@
             <a href="#quem_somos">Quem Somos? </a>
             <a href="#dicas">Dicas</a>
             <a href="#beneficios">Beneficios</a>
-            <a href="login.html">Login</a>
+            <a class="login" href="login.html">Login</a>
         </nav>
         </div>
     </header>
     <main>
-        <img src="../static/img/banner.png" alt="banner">
+        <img class="banner" src="../static/img/banner.png" alt="banner">
 
         <section id="quem_somos">
-            <div>
-                <h2>Quem Somos?</h2>
-            </div>
-            <div>
-                <p>A Solidez Capital nasceu com o propósito de ajudar pessoas comuns a construírem um futuro mais seguro e tranquilo, sem fórmulas mágicas ou promessas irreais. Acreditamos que educação financeira é para todos, e começa com passos simples.</p>
-            </div>
-            <img src="../static/img/logo.png" alt="">
+            <div class="conteudo">
+                <div class="titulo">
+                    <h2>Quem Somos?</h2>
+                </div>
+                <div class="texto">
+                    <p>A Solidez Capital nasceu com o propósito de ajudar pessoas comuns a construírem um futuro mais seguro e tranquilo, sem fórmulas mágicas ou promessas irreais. Acreditamos que educação financeira é para todos, e começa com passos simples.</p>
+                </div>
+                </div>
+                <div class="img">
+                    <img src="../static/img/logo.png" alt="">
+                </div>
         </section>
 
         <section id="dicas">
             <img src="../static/img/moeda_na_mao 1.png" alt="">
+            <div class="conteudo">
             <div>
                 <h2>Economize R$ 100/mês com essas Dicas!</h2>
             </div>
@@ -41,6 +47,7 @@
     . Regras simples para poupar: 50-30-20: 50% para necessidades, 30% para lazer, 20% para poupança/investimentos. <br>
     .Reduza custos em casa;<br>
     .Apps que salvam seu bolso.</p>
+            </div>
             </div>
         </section>
 
