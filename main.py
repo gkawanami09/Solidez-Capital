@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -32,15 +32,15 @@ def login():
 
         usuario = next((u for u in usuarios if u['email'] == email), None)
 
-        if usuario and check_password_hash(usuario['senha'], senha):
+        if (usuario and (usuario['senha'] == senha)):
             session['usuario_logado'] = usuario['email']
             session['nome_usuario'] = usuario['nome']
             session['saldo'] = usuario.get('saldo', 0)
+
             flash('Login realizado com sucesso!', 'success')
-            return redirect(url_for('painel'))
+            return redirect('/painel')
         else:
             flash('Email ou senha incorretos!', 'danger')
-
     return render_template('login.html')
 
 
@@ -51,7 +51,7 @@ def cadastro():
         email = request.form['email']
         cpf = request.form['cpf']
         senha = request.form['senha']
-        confirmar_senha = request.form['confirmar_senha']
+        confirmar_senha = request.form['senhaa']
 
         if senha != confirmar_senha:
             flash('As senhas não coincidem!', 'danger')
@@ -66,21 +66,37 @@ def cadastro():
             flash('CPF já cadastrado!', 'danger')
             return redirect(url_for('cadastro'))
 
-        usuarios.append({
-            'nome': nome,
-            'email': email,
-            'cpf': cpf,  # Adicionando CPF ao usuário
-            'senha': generate_password_hash(senha),
-            'saldo': 0,
-            'investido': 0
-        })
+        usuario = {
+                'nome': nome,
+                'email': email,
+                'cpf': cpf,
+
+                 'senha': senha,
+                 'saldo': 0,
+                 'investido': 0
+                }
+        usuarios.append(usuario)
 
         flash('Cadastro realizado com sucesso! Faça login.', 'success')
-        return redirect(url_for('login'))
+
+        return render_template('login.html')
 
     return render_template('cadastro.html')
 
 
+@app.route('/painel')
+def painel():
+    if 'usuario_logado' not in session:
+        return redirect(url_for('login'))
+
+    usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
+    usuario_transacoes = [t for t in transacoes_db if t['usuario'] == session['usuario_logado']][
+                         -5:]
+
+    return render_template('painel.html',
+                           saldo=session['saldo'],
+                           investido=usuario['investido'] if usuario else 0,
+                           transacoes=usuario_transacoes)
 @app.route('/logout')
 def logout():
     session.pop('usuario_logado', None)
@@ -90,76 +106,67 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/editar', methods=['GET', 'POST'])
-def editar():
+@app.route('/usuario/editar', methods=['GET', 'POST'])
+def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
     usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
-
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('painel'))
 
     if request.method == 'POST':
-        usuario['nome'] = request.form['nome']
-        novo_email = request.form['email']
-        novo_cpf = request.form.get('cpf')
+        usuario['nome'] = request.form.get('nome', usuario['nome'])
+        novo_email = request.form.get('email', usuario['email'])
 
+        # Verificação de email existente
         if novo_email != usuario['email'] and any(u['email'] == novo_email for u in usuarios):
-            flash("Este email já está em uso por outro usuário", 'danger')
-            return redirect(url_for('editar'))
-
-        if novo_cpf and novo_cpf != usuario.get('cpf', '') and any(u.get('cpf') == novo_cpf for u in usuarios):
-            flash("Este CPF já está sendo usado", 'danger')
-            return redirect(url_for('editar'))
-
-        senha_atual = request.form.get('senha_atual')
-        nova_senha = request.form.get('nova_senha')
-        confirmar_senha = request.form.get('confirmar_senha')
-
-        if senha_atual or nova_senha or confirmar_senha:
-            if not check_password_hash(usuario['senha'], senha_atual):
-                flash("Senha atual incorreta", 'danger')
-                return redirect(url_for('editar'))
-
-            if nova_senha != confirmar_senha:
-                flash('Nova senha e confirmação de senha não coincidem', 'danger')
-                return redirect(url_for('editar'))
-            if len(nova_senha) < 8:
-                flash("A nova senha deve ter no mínimo 8 caracteres e máximo 12 caracteres", 'danger')
-                return redirect(url_for('editar'))
-
-            usuario['senha'] = generate_password_hash(nova_senha)
+            flash("Este email já está em uso!", 'danger')
+            return redirect(url_for('editar_usuario'))
 
         usuario['email'] = novo_email
-        if novo_cpf:
+
+        # Atualização de CPF
+        novo_cpf = request.form.get('cpf')
+        if novo_cpf and novo_cpf != usuario.get('cpf'):
+            if any(u.get('cpf') == novo_cpf for u in usuarios):
+                flash("CPF já cadastrado!", 'danger')
+                return redirect(url_for('editar_usuario'))
             usuario['cpf'] = novo_cpf
 
-        session['nome_usuario'] = usuario['nome']
+        # Atualização de senha
+        nova_senha = request.form.get('nova_senha')
+        if nova_senha:
+            if nova_senha != request.form.get('confirmar_senha'):
+                flash("As senhas não coincidem!", 'danger')
+                return redirect(url_for('editar_usuario'))
+            if len(nova_senha) < 8:
+                flash("A senha deve ter no mínimo 8 caracteres!", 'danger')
+                return redirect(url_for('editar_usuario'))
+            usuario['senha'] = nova_senha
+
+        # Atualizar sessão
         session['usuario_logado'] = usuario['email']
+        session['nome_usuario'] = usuario['nome']
 
         flash('Perfil atualizado com sucesso!', 'success')
-        return redirect(url_for('usuario'))
+        return redirect(url_for('visualizar_usuario'))
 
-    return render_template('editar.html', usuario=usuario)
-
+    return render_template('editar_usuario.html', usuario=usuario)
 
 @app.route('/usuario')
-def usuario():
+def visualizar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
     usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
-
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('painel'))
 
-    usuario_exibicao = usuario.copy()
-
-    return render_template('usuario.html', usuario=usuario_exibicao)
-
+    usuario_exibicao = {k: v for k, v in usuario.items() if k != 'senha'}
+    return render_template('visualizar_usuario.html', usuario=usuario_exibicao)
 
 
 if __name__ == '__main__':
