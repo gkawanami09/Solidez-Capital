@@ -18,5 +18,36 @@
         </nav>
         </div>
     </header>
+    <main>
+        <section>
+        <h1>Transações</h1>
+        <div>
+            <form>
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required> 
+                <label for="descricao">Descrição:</label> 
+                <input type="text" id="descricao" name="descricao" placeholder="Insira a Descrição" required>
+                <label for="tipos">Tipo:</label>
+                <select id="tipos" name="tipos" required>
+                <option value="entrada">Entrada</option>
+                <option value="saida"> Saída </option>
+                </select>
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <a href="index.html"><img src="../static/img/logo.png" alt="Logo"></a>
+            <nav>
+                <a href="usuarios.html">Usuário</a>
+                <a href="painel.html">Painel </a>
+                <a href="transacoes.html">Transações</a>
+                <a href="emergencia.html">Emergência</a>
+                <a href="investimentos.html">Investimentos</a>
+            </nav>
+        </div>
+    </footer>
 </body>
 </html>
