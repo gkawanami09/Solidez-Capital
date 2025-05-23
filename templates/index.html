@@ -16,7 +16,7 @@
         <a href="#quem_somos">Quem Somos?</a>
         <a href="#dicas">Dicas</a>
         <a href="#beneficios">Benefícios</a>
-        <a class="{{ url_for('login') }}" href="/login">Login</a>
+        <a class="login" href="{{ url_for('login') }}">Login</a>
       </nav>
     </div>
   </header>
@@ -86,7 +86,7 @@
       </div>
 
       <div class="botao">
-        <a href="/login">Faça seu Cadastro Agora!!</a>
+        <a href="{{ url_for('login') }}">Faça seu Cadastro Agora!!</a>
       </div>
     </section>
   </main>
@@ -100,7 +100,7 @@
           <a href="#quem_somos">Quem Somos?</a>
           <a href="#dicas">Dicas</a>
           <a href="#beneficios">Benefícios</a>
-          <a class="{{ url_for('login') }}" href="/login">Login</a>
+          <a class="login" href="{{ url_for('login') }}">Login</a>
         </nav>
       </div>
     </footer>

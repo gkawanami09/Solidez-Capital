@@ -9,17 +9,17 @@
 <body>
   <!-- HEADER -->
   <header>
-    <div class="container">
+    <div class="container-flex">
       <a href="/">
         <img src="../static/img/logo.png" alt="Logo Solidez Capital" />
       </a>
-      <nav>
+      <div class="nav-falsa">
         <p >Usuário</p>
         <p>Painel</p>
         <p>Transações</p>
         <p>Emergência</p>
         <p>Investimentos</p>
-      </nav>
+      </div>
     </div>
   </header>
 
@@ -28,7 +28,7 @@
     <section class="login-section">
       <div class="login-box">
         <h1>Login</h1>
-        <form action="/painel">
+        <form action="/login" method="POST">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" placeholder="Digite seu Email:" required />
 
@@ -50,13 +50,13 @@
       <a href="/">
         <img src="../static/img/logo.png" alt="Logo" />
       </a>
-      <nav>
+      <div class="nav-falsa">
         <p>Usuário</p>
         <p>Painel</p>
         <p>Transações</p>
         <p>Emergência</p>
         <p>Investimentos</p>
-      </nav>
+      </div>
     </div>
   </footer>
 </body>

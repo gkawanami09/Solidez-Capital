@@ -1,53 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solidez Capital</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transações - Solidez Capital</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="index.html"> <img src="../static/img/logo.png" alt=""></a>
-        <nav>
-            <a href="usuarios.html">Usuário</a>
-            <a href="painel.html">Painel </a>
-            <a href="transacoes.html">Transações</a>
-            <a href="emergencia.html">Emergência</a>
-            <a href="investimentos.html">Investimentos</a>
-        </nav>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container-flex">
+      <a href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Solidez Capital" />
+      </a>
+      <div class="nav-falsa">
+        <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
+        <a href="{{ url_for('painel') }}">Painel</a>
+        <strong><a href="{{ url_for('transacoes') }}">Transações</a></strong>
+        <p>Emergência</p>
+        <p>Investimentos</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="login-section">
+    <div class="login-box" style="max-width: 600px;">
+      <h1>Nova Transação</h1>
+
+      <!-- Mensagens de sucesso ou erro -->
+      {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+          {% for categoria, mensagem in mensagens %}
+            <div class="alert {{ categoria }}">{{ mensagem }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Formulário -->
+      <form action="{{ url_for('transacoes') }}" method="POST">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" placeholder="Ex: Compra, Salário..." required>
+
+        <label for="valor">Valor (R$):</label>
+        <input type="number" id="valor" name="valor" step="0.01" min="0.01" required>
+
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo" required>
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+
+        <div class="buttons">
+          <button type="submit" class="login">Salvar</button>
+          <a class="login" href="{{ url_for('painel') }}">Voltar ao Painel</a>
         </div>
-    </header>
-    <main>
-        <section>
-        <h1>Transações</h1>
-        <div>
-            <form>
-                <label for="data">Data:</label>
-                <input type="date" id="data" name="data" required> 
-                <label for="descricao">Descrição:</label> 
-                <input type="text" id="descricao" name="descricao" placeholder="Insira a Descrição" required>
-                <label for="tipos">Tipo:</label>
-                <select id="tipos" name="tipos" required>
-                <option value="entrada">Entrada</option>
-                <option value="saida"> Saída </option>
-                </select>
-                <button type="submit">Salvar</button>
-            </form>
-        </div>
-        </section>
-    </main>
-    <footer>
-        <div class="container">
-            <a href="index.html"><img src="../static/img/logo.png" alt="Logo"></a>
-            <nav>
-                <a href="usuarios.html">Usuário</a>
-                <a href="painel.html">Painel </a>
-                <a href="transacoes.html">Transações</a>
-                <a href="emergencia.html">Emergência</a>
-                <a href="investimentos.html">Investimentos</a>
-            </nav>
-        </div>
-    </footer>
+      </form>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-container">
+      <a href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" />
+      </a>
+      <div class="nav-falsa">
+        <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
+        <a href="{{ url_for('painel') }}">Painel</a>
+        <strong><a href="{{ url_for('transacoes') }}">Transações</a></strong>
+        <p>Emergência</p>
+        <p>Investimentos</p>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>

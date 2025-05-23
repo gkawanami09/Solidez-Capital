@@ -1,56 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solidez Capital</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solidez Capital - Painel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="index.html"> <img src="../static/img/logo.png" alt=""></a>
-        <nav>
-            <a href="usuarios.html">Usuário</a>
-            <a href="painel.html">Painel </a>
-            <a href="transacoes.html">Transações</a>
-            <a href="emergencia.html">Emergência</a>
-            <a href="investimentos.html">Investimentos</a>
-        </nav>
+  <header>
+    <div class="container-flex">
+      <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
+      <nav>
+        <a href="/usuario">Usuário</a>
+        <a href="/painel"><strong>Painel</strong></a>
+        <a href="/transacoes">Transações</a>
+        <a href="#">Emergência</a>
+        <a href="#">Investimentos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="painel-section">
+      <p class="saudacao">Olá, {{ session['nome_usuario'] }}!</p>
+
+      <div class="painel-cards">
+        <div class="card">
+          <h3>Saldo Atual</h3>
+          <p class="valor-verde">R$ {{ saldo }}</p>
         </div>
-    </header>
-    <main>
-        <section>
-            <div>
-                <h3>Saldo Atual</h3>
-            </div>
-            <div>
-                <div>
-                    <h3>Total Entrada</h3>
-                </div>
-                <div>
-                    <h3>Total Saída</h3>
-                </div>
-                <div>
-                    <h3> investimentos </h3>
-                </div>
-            </div>
-            <div>
-                <a href="transacoes.html">Nova Entrada</a>
-                <a href="transacoes.html">Nova Saída</a>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <div class="container">
-            <a href="index.html"><img src="../static/img/logo.png" alt="Logo"></a>
-            <nav>
-                <a href="usuarios.html">Usuário</a>
-                <a href="painel.html">Painel </a>
-                <a href="transacoes.html">Transações</a>
-                <a href="emergencia.html">Emergência</a>
-                <a href="investimentos.html">Investimentos</a>
-            </nav>
+
+        <div class="card">
+          <h3>Total Entrada</h3>
+          <p class="valor-verde">R$ {{ total_entrada }}</p>
         </div>
-        </footer>
+
+        <div class="card">
+          <h3>Total Saída</h3>
+          <p class="valor-vermelho">R$ {{ total_saida }}</p>
+        </div>
+
+        <div class="card">
+          <h3>Investimentos</h3>
+          <p class="valor-verde">R$ {{ investido }}</p>
+        </div>
+      </div>
+
+      <div class="acoes-painel">
+        <a href="/transacoes?tipo=entrada">Nova Entrada</a>
+        <a href="/transacoes?tipo=saida">Nova Saída</a>
+      </div>
+
+      <table class="tabela-transacoes">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transacao in transacoes %}
+          <tr>
+            <td>{{ transacao.data }}</td>
+            <td>{{ transacao.descricao }}</td>
+            <td>R$ {{ transacao.valor }}</td>
+            <td>{{ transacao.tipo.capitalize() }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Nenhuma transação registrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
+      <nav>
+        <a href="/usuario">Usuário</a>
+        <strong><a href="/painel">Painel</a></strong>
+        <a href="/transacoes">Transações</a>
+        <a href="#">Emergência</a>
+        <a href="#">Investimentos</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>

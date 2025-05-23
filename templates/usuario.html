@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solidez Capital</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <a href="/">
+        <img src="../static/img/logo.png" alt="Logo" />
+      </a>
+      <div class="nav-falsa">
+        <p>Usuário</p>
+        <p>Painel</p>
+        <p>Transações</p>
+        <p>Emergência</p>
+        <p>Investimentos</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main>
+    <section class="usuario-section">
+      <div class="usuario-box">
+        <h1>Usuário</h1>
+
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" value="Laís Ribeiro Sinatra" readonly>
+
+        <label for="cpf">CPF</label>
+        <input type="text" id="cpf" name="cpf" value="749.032.598-81" readonly>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="lais.sinatra@gmail.com" readonly>
+
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" value="**********" readonly>
+
+        <div class="usuario-buttons">
+          <a href="/painel" class="voltar">Voltar</a>
+          <a href="/usuario/editar" class="editar">Editar</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <a href="/"><img src="../static/img/logo.png" alt="Logo"></a>
+      <div class="nav-falsa">
+        <p>Usuário</p>
+        <p>Painel</p>
+        <p>Transações</p>
+        <p>Emergência</p>
+        <p>Investimentos</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
