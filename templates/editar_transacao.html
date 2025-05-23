@@ -1,0 +1,36 @@
+<!DOCTYPE html> 
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editar Transação</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>Editar Transação</h1>
+ 
+    <form method="POST">
+<div>
+<label for="data">Data:</label>
+<input type="date" id="data" name="data" value="{{ transacao.data }}" required>
+</div>
+<div>
+<label for="descricao">Descrição:</label>
+<input type="text" id="descricao" name="descricao" value="{{ transacao.descricao }}" required>
+</div>
+<div>
+<label for="valor">Valor:</label>
+<input type="number" id="valor" name="valor" step="0.01" min="0.01" value="{{ transacao.valor }}" required>
+</div>
+<div>
+<label for="tipo">Tipo:</label>
+<select id="tipo" name="tipo" required>
+<option value="entrada" {% if transacao.tipo == 'entrada' %}selected{% endif %}>Entrada</option>
+<option value="saida" {% if transacao.tipo == 'saida' %}selected{% endif %}>Saída</option>
+</select>
+</div>
+<button type="submit">Salvar Alterações</button>
+<a href="{{ url_for('transacoes') }}">Cancelar</a>
+</form>
+</body>
+</html>
