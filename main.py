@@ -54,14 +54,15 @@ def cadastro():
         nome = request.form.get('nome')
         email = request.form.get('email')
         cpf = request.form.get('cpf')
-        senha = request.form.get('senha')
-        confirmar = request.form.get('confirmar')
+        senha = request.form.get('senha').strip()  # Adicionando strip() para remover espaços
+        confirmar = request.form.get('confirmar').strip()  # Adicionando strip() para remover espaços
 
         # Verifica se as senhas coincidem
         if senha != confirmar:
             flash('As senhas não coincidem!', 'danger')
             return redirect(url_for('cadastro'))
 
+        # Restante do código permanece o mesmo...
         # Verifica se o email já está cadastrado
         if any(u['email'] == email for u in usuarios):
             flash('Email já cadastrado!', 'danger')
@@ -117,9 +118,7 @@ def painel():
 
     usuario_email = session['usuario_logado']
     usuario = next((u for u in usuarios if u['email'] == usuario_email), None)
-    # ^ Procura na lista "usuarios" o primeiro usuário cujo email seja igual ao email da sessão (usuário logado).
-    # | A função next() retorna esse usuário, se encontrar.
-    # L Se não encontrar nenhum, retorna None para evitar erro.
+
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('login'))
@@ -131,16 +130,18 @@ def painel():
     total_entrada = sum(t['valor'] for t in transacoes if t['tipo'] == 'entrada')
     total_saida = sum(t['valor'] for t in transacoes if t['tipo'] == 'saida')
     saldo = total_entrada - total_saida
+    total_investido = usuario.get('investido', 0)  # Adicionei esta linha
 
     # Atualiza saldo na sessão
     session['saldo'] = saldo
 
     return render_template(
         'painel.html',
+        usuario=usuario,  # Adicionei esta linha para passar o usuário para o template
         saldo=saldo,
         total_entrada=total_entrada,
         total_saida=total_saida,
-        investido=usuario.get('investido', 0),
+        total_investido=total_investido,  # Corrigi o nome da variável
         transacoes=transacoes[-5:]
     )
 # transacoes
