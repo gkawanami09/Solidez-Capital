@@ -100,7 +100,8 @@ select:focus {
   align-items: center;
   position: fixed;
   width: 100%;
-  background-color: var(--cor-branco)
+  background-color: var(--cor-branco);
+  font-size: var(--fonte-p);
 }
 
 .container-flex {
