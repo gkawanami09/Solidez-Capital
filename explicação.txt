@@ -1,0 +1,251 @@
+# Explicação linha a linha do código Flask
+
+## Imports e configuração inicial
+
+```python
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from datetime import datetime
+import re
+```
+
+Importa os módulos usados no projeto:
+
+* `Flask`: framework principal da aplicação web.
+* `render_template`: renderiza arquivos HTML usando Jinja.
+* `request`: acessa os dados enviados pelos formulários (via POST ou GET).
+* `redirect` e `url_for`: redireciona para outras rotas.
+* `session`: armazena dados temporários do usuário logado.
+* `flash`: exibe mensagens temporárias para o usuário (como "Login realizado com sucesso").
+* `datetime`: trabalha com data e hora.
+* `re`: permite validação com expressões regulares (regex).
+
+```python
+app = Flask(__name__)
+app.secret_key = 'chave_secreta_solidez'
+```
+
+Cria a aplicação Flask e define uma chave secreta usada para proteger sessões e mensagens flash.
+
+## Simulação de banco de dados com listas
+
+```python
+usuarios = []
+transacoes_db = []
+investimentos_db = []
+```
+
+Essas listas funcionam como banco de dados temporário enquanto o servidor está em execução.
+
+## Variáveis globais acessíveis nos templates
+
+```python
+@app.context_processor
+def inject_vars():
+    return {'now': datetime.now(), 'datetime': datetime}
+```
+
+Adiciona a variável `now` com a hora atual, e `datetime` completo nos templates HTML.
+
+## Página inicial
+
+```python
+@app.route('/')
+def index():
+    return render_template('index.html')
+```
+
+Define a rota raiz (`/`) e renderiza a página inicial `index.html`.
+
+## Login do usuário
+
+```python
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+```
+
+Cria a rota `/login`, aceita GET (mostrar formulário) e POST (verificar dados).
+
+```python
+if request.method == 'POST':
+    email = request.form['email']
+    senha = request.form['senha']
+```
+
+Se o método for POST, lê os dados inseridos no formulário.
+
+```python
+usuario = next((u for u in usuarios if u['email'] == email and u['senha'] == senha), None)
+```
+
+Procura o usuário com email e senha corretos usando:
+
+* `next(iterável, padrão)`: retorna o próximo item do iterador, ou `None` se não achar.
+* `any()`: seria usado para checar se **qualquer** elemento atende a uma condição (usado mais adiante).
+* `(u for u in usuarios if ...)`: é uma **generator expression** que percorre todos os usuários.
+
+```python
+if usuario:
+    session['usuario_logado'] = usuario['email']
+    session['nome_usuario'] = usuario['nome']
+    session['saldo'] = usuario.get('saldo', 0)
+```
+
+Se o usuário foi encontrado:
+
+* Salva email, nome e saldo na sessão para uso nas outras páginas.
+
+```python
+flash('Login realizado com sucesso!', 'success')
+return redirect(url_for('painel'))
+```
+
+Mostra mensagem de sucesso e redireciona para o painel.
+
+Se falhar:
+
+```python
+else:
+    flash('Email ou senha incorretos!', 'danger')
+```
+
+Mensagem de erro caso as credenciais estejam erradas.
+
+## Cadastro de usuário
+
+```python
+@app.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+```
+
+Define a rota `/cadastro`, que permite criar novos usuários.
+
+### Validação dos dados:
+
+* `senha != confirmar`: as senhas devem coincidir.
+* `any(u['email'] == email for u in usuarios)`: verifica se já existe usuário com mesmo email.
+* `re.search(r'[A-Z]', senha)`: verifica se existe pelo menos uma letra maiúscula.
+
+### Adiciona usuário se tudo estiver correto:
+
+```python
+usuarios.append({...})
+```
+
+E redireciona para login com mensagem de sucesso.
+
+## Painel principal
+
+```python
+@app.route('/painel')
+def painel():
+```
+
+Mostra a área principal do usuário logado. Calcula:
+
+* `total_entrada`: soma de todas entradas
+* `total_saida`: soma de todas saídas
+* `saldo`: diferença entre entrada e saída
+
+Usa `sum()` com `for` dentro:
+
+```python
+total_entrada = sum(t['valor'] for t in transacoes if t['tipo'] == 'entrada')
+```
+
+Filtra com `if`, e soma os `valor` das transações.
+
+## Transações (CRUD)
+
+```python
+@app.route('/transacoes', methods=['GET', 'POST'])
+def transacoes():
+```
+
+Controla o cadastro, edição e exclusão de transações do usuário.
+
+### Edição
+
+```python
+if request.method == 'POST' and 'editar_id' in request.form and not request.form.get('data'):
+```
+
+Detecta se clicou no botão de edição, mas ainda não submeteu o formulário (sem `data`).
+
+### Exclusão
+
+```python
+if request.method == 'POST' and 'excluir_id' in request.form:
+```
+
+Remove a transação da lista com base no `id`, se o dono for o mesmo.
+
+### Salvar nova ou atualizar existente
+
+```python
+if request.method == 'POST' and request.form.get('data'):
+```
+
+Se houver `data`, o formulário foi enviado:
+
+* Se tiver `editar_id`, atualiza transação.
+* Senão, cria nova e gera `id` com `uuid4()`.
+
+### Mostra a página de transações
+
+```python
+return render_template('transacoes.html', ...)
+```
+
+## Logout
+
+```python
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash(...)
+    return redirect(url_for('index'))
+```
+
+Apaga todos os dados da sessão (logout).
+
+## Editar perfil
+
+```python
+@app.route('/usuario/editar', methods=['GET', 'POST'])
+def editar_usuario():
+```
+
+Permite o usuário atualizar seus dados:
+
+* Nome, email e CPF.
+* Nova senha (valida como no cadastro).
+
+Se tudo certo:
+
+* Atualiza dados do usuário.
+* Atualiza sessão.
+* Redireciona para página de perfil.
+
+## Visualizar perfil
+
+```python
+@app.route('/usuario')
+def visualizar_usuario():
+```
+
+Exibe os dados do usuário atual.
+
+```python
+usuario_exibicao = {k: v for k, v in usuario.items() if k != 'senha'}
+```
+
+Usa **dicionário por compreensão** para esconder a senha do usuário.
+
+## Rodar o servidor
+
+```python
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+Executa o servidor local com `debug=True`, que reinicia sozinho ao editar o código.

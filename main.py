@@ -11,8 +11,11 @@ transacoes_db = []
 investimentos_db = []
 
 # Variáveis globais acessíveis nos templates
+# Este decorador @app.context_processor define uma função que injeta variáveis globais nos templates HTML.
+# Assim, as variáveis 'now' (data e hora atual) e 'datetime' (módulo completo) estarão disponíveis automaticamente
+# em todos os arquivos .html renderizados, sem precisar passá-las manualmente com render_template.
 @app.context_processor
-def inject_vars():
+def inject_vars(): #vai "injetar" em todos os templates
     return {'now': datetime.now(), 'datetime': datetime}
 
 
@@ -34,6 +37,10 @@ def login():
         # Se não encontrar nenhum, retorna None para evitar erro.
         usuario = next((u for u in usuarios if u['email'] == email and u['senha'] == senha), None)
 
+        # Se o usuário foi encontrado (login válido), os dados são armazenados na sessão para manter o usuário logado.
+        # - 'usuario_logado': salva o e-mail do usuário logado.
+        # - 'nome_usuario': salva o nome do usuário, usado para exibir saudações personalizadas.
+        # - 'saldo': salva o saldo atual, obtido com .get() para evitar erro caso o campo não exista.
         if usuario:
             session['usuario_logado'] = usuario['email']
             session['nome_usuario'] = usuario['nome']
@@ -47,6 +54,7 @@ def login():
     return render_template('login.html')
 
 
+
 # Cadastro
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
@@ -57,6 +65,22 @@ def cadastro():
         senha = request.form.get('senha').strip()  # Adicionando strip() para remover espaços
         confirmar = request.form.get('confirmar').strip()  # Adicionando strip() para remover espaços
 
+        # maiuscula = False
+        # minuscula = False
+        # numero = False
+        # caracterpcd= False
+
+        # for s in senha:
+        #     if s.isupper():
+        #         maiuscula = True
+        #     if s.islowerw():
+        #         minuscula = True
+        #     if s.isdigit():
+        #         numero= True
+        #     if s.isalnum():
+        #         caracterpcd = True
+
+
         # Verifica se as senhas coincidem
         if senha != confirmar:
             flash('As senhas não coincidem!', 'danger')
@@ -64,11 +88,17 @@ def cadastro():
 
         # Restante do código permanece o mesmo...
         # Verifica se o email já está cadastrado
-        if any(u['email'] == email for u in usuarios):
+        # Verifica se já existe algum usuário com o mesmo e-mail.
+        # A função `any()` percorre todos os usuários e retorna True se encontrar um com o mesmo e-mail.
+        # Isso impede que dois usuários se cadastrem com o mesmo endereço de e-mail.
+        if any(u['email'] == email for u in usuarios):    #mudar
             flash('Email já cadastrado!', 'danger')
             return redirect(url_for('cadastro'))
 
         # Verifica se o CPF já está cadastrado
+        # Verifica se já existe algum usuário com o mesmo CPF.
+        # A função `any()` retorna True se pelo menos um usuário na lista `usuarios`
+        # tiver o mesmo CPF informado no cadastro. Isso evita duplicidade de dados.
         if any(u['cpf'] == cpf for u in usuarios):
             flash('CPF já cadastrado!', 'danger')
             return redirect(url_for('cadastro'))
@@ -78,7 +108,7 @@ def cadastro():
             flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
             return redirect(url_for('cadastro'))
 
-        if not re.search(r'[A-Z]', senha):
+        if not re.search(r'[A-Z]', senha): #re ele vai analisar a senha e verificar se ela tem todos requisitos
             flash('A senha deve conter pelo menos uma letra maiúscula.', 'danger')
             return redirect(url_for('cadastro'))
 
@@ -116,7 +146,11 @@ def painel():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
+    # Recupera o email do usuário atualmente logado, armazenado na sessão.
     usuario_email = session['usuario_logado']
+    # Busca o dicionário do usuário correspondente na lista de usuários.
+    # A função `next()` retorna o primeiro usuário cujo 'email' bate com o email da sessão.
+    # Se nenhum for encontrado, retorna `None` para evitar erro.    
     usuario = next((u for u in usuarios if u['email'] == usuario_email), None)
 
     if not usuario:
@@ -127,10 +161,15 @@ def painel():
     transacoes = [t for t in transacoes_db if t['usuario'] == usuario_email]
 
     # Cálculos
+    # Calcula o total de entradas somando os valores de todas as transações do tipo 'entrada'.
     total_entrada = sum(t['valor'] for t in transacoes if t['tipo'] == 'entrada')
+    # Calcula o total de saídas somando os valores de todas as transações do tipo 'saida'.
     total_saida = sum(t['valor'] for t in transacoes if t['tipo'] == 'saida')
+    # Calcula o saldo final subtraindo o total de saídas do total de entradas.
     saldo = total_entrada - total_saida
-    total_investido = usuario.get('investido', 0)  # Adicionei esta linha
+    # Recupera o valor total investido do usuário.
+    # Se a chave 'investido' não existir no dicionário do usuário, retorna 0 como padrão.
+    total_investido = usuario.get('investido', 0) 
 
     # Atualiza saldo na sessão
     session['saldo'] = saldo
@@ -142,7 +181,7 @@ def painel():
         total_entrada=total_entrada,
         total_saida=total_saida,
         total_investido=total_investido,  # Corrigi o nome da variável
-        transacoes=transacoes[-5:]
+        transacoes=transacoes[-5:] #-5 foi tulizado para aparecer as ultimas 5 transações
     )
 # transacoes
 @app.route('/transacoes', methods=['GET', 'POST'])
@@ -165,8 +204,14 @@ def transacoes():
     # EXCLUIR TRANSACAO
     if request.method == 'POST' and 'excluir_id' in request.form:
         excluir_id = request.form.get('excluir_id')
+        # Percorre a lista de transações usando enumerate, que retorna tanto o índice (i) quanto o item (t) da lista.
+        # Isso é necessário porque vamos precisar do índice para excluir a transação da lista.
         for i, t in enumerate(transacoes_db):
+            # Verifica se a transação atual (t) tem o mesmo ID recebido pelo formulário (excluir_id)
+            # e se pertence ao usuário logado (comparando o e-mail).
             if t.get('id') == excluir_id and t['usuario'] == email_usuario:
+                # Se for a transação correta, usa o índice (i) para removê-la da lista com 'del'.
+                # Isso garante que só a transação específica daquele usuário será excluída.
                 del transacoes_db[i]
                 flash('Transação excluída com sucesso!', 'success')
                 return redirect(url_for('transacoes'))
@@ -193,9 +238,14 @@ def transacoes():
                     flash('Transação atualizada com sucesso!', 'success')
                     return redirect(url_for('transacoes'))
         else:
+            # Importa a função uuid4 do módulo uuid, que serve para gerar identificadores únicos.
+            # Isso é útil para garantir que cada transação tenha um "RG" próprio, ou seja, um ID que nunca se repete.
             from uuid import uuid4
+            # Adiciona uma nova transação à lista 'transacoes_db'.
+            # O campo 'id' recebe um identificador único gerado com uuid4() e convertido para string com str().
+            # Esse ID será usado para poder editar ou excluir essa transação depois, sem risco de confundir com outra.
             transacoes_db.append({
-                'id': str(uuid4()),
+                'id': str(uuid4()),   # ID exclusivo para identificar a transação
                 'usuario': email_usuario,
                 'data': data,
                 'descricao': descricao,
@@ -216,14 +266,15 @@ def logout():
     flash('Você foi deslogado com sucesso!', 'info')
     return redirect(url_for('index'))
 
-
 # Editar perfil
 @app.route('/usuario/editar', methods=['GET', 'POST'])
 def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-
-    usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
+    
+    # A função `next()` retorna o primeiro usuário cujo 'email' bate com o email da sessão.
+    usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None) 
+    
 
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
@@ -254,7 +305,7 @@ def editar_usuario():
                 flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
                 return redirect(url_for('editar_usuario'))
 
-            if not re.search(r'[A-Z]', nova_senha):
+            if not re.search(r'[A-Z]', nova_senha): #re ele vai analisar a senha e verificar se ela tem todos requisitos
                 flash('A senha deve conter pelo menos uma letra maiúscula.', 'danger')
                 return redirect(url_for('editar_usuario'))
 
