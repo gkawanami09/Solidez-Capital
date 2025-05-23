@@ -221,9 +221,7 @@ def logout():
 def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    # Procura na lista "usuarios" o primeiro usuário cujo email seja igual ao email da sessão (usuário logado).
-    # A função next() retorna esse usuário, se encontrar.
-    # Se não encontrar nenhum, retorna None para evitar erro.
+
     usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None)
 
     if not usuario:
@@ -234,12 +232,9 @@ def editar_usuario():
         novo_nome = request.form.get('nome', usuario['nome'])
         novo_email = request.form.get('email', usuario['email'])
         novo_cpf = request.form.get('cpf', usuario['cpf'])
-        nova_senha = request.form.get('nova_senha')
-        confirmar_senha = request.form.get('confirmar_senha')
+        nova_senha = request.form.get('nova_senha', '').strip()
+        confirmar_senha = request.form.get('confirmar_senha', '').strip()
 
-        # Verifica se o novo email digitado é diferente do email atual do usuário.
-        # E também verifica se esse novo email já está sendo usado por outro usuário da lista "usuarios".
-        # A função any() retorna True se existir pelo menos um usuário com o mesmo email (impedindo duplicação).    isso se aplica para todo any() do codigo
         if novo_email != usuario['email'] and any(u['email'] == novo_email for u in usuarios):
             flash("Este email já está em uso!", 'danger')
             return redirect(url_for('editar_usuario'))
@@ -252,9 +247,28 @@ def editar_usuario():
             if nova_senha != confirmar_senha:
                 flash("As senhas não coincidem!", 'danger')
                 return redirect(url_for('editar_usuario'))
-            if len(nova_senha) < 8:
-                flash("A senha deve ter no mínimo 8 caracteres!", 'danger')
+
+            # Validação completa da senha (igual ao cadastro)
+            if len(nova_senha) < 8 or len(nova_senha) > 12:
+                flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
                 return redirect(url_for('editar_usuario'))
+
+            if not re.search(r'[A-Z]', nova_senha):
+                flash('A senha deve conter pelo menos uma letra maiúscula.', 'danger')
+                return redirect(url_for('editar_usuario'))
+
+            if not re.search(r'[a-z]', nova_senha):
+                flash('A senha deve conter pelo menos uma letra minúscula.', 'danger')
+                return redirect(url_for('editar_usuario'))
+
+            if not re.search(r'[0-9]', nova_senha):
+                flash('A senha deve conter pelo menos um número.', 'danger')
+                return redirect(url_for('editar_usuario'))
+
+            if not re.search(r'[!@#$%^&*(),.?":{}|<>]', nova_senha):
+                flash('A senha deve conter pelo menos um caractere especial.', 'danger')
+                return redirect(url_for('editar_usuario'))
+
             usuario['senha'] = nova_senha
 
         usuario['nome'] = novo_nome
