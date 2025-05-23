@@ -123,28 +123,63 @@ def transacoes():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
-    if request.method == 'POST':
+    email_usuario = session['usuario_logado']
+
+    transacao_em_edicao = None
+
+    # EDITAR TRANSACAO
+    if request.method == 'POST' and 'editar_id' in request.form and not request.form.get('data'):
+        editar_id = request.form.get('editar_id')
+        for t in transacoes_db:
+            if t.get('id') == editar_id and t['usuario'] == email_usuario:
+                transacao_em_edicao = t
+                break
+
+    # EXCLUIR TRANSACAO
+    if request.method == 'POST' and 'excluir_id' in request.form:
+        excluir_id = request.form.get('excluir_id')
+        for i, t in enumerate(transacoes_db):
+            if t.get('id') == excluir_id and t['usuario'] == email_usuario:
+                del transacoes_db[i]
+                flash('Transação excluída com sucesso!', 'success')
+                return redirect(url_for('transacoes'))
+
+    # SALVAR/ATUALIZAR TRANSACAO
+    if request.method == 'POST' and request.form.get('data'):
         data = request.form.get('data')
         descricao = request.form.get('descricao')
-        tipo = request.form.get('tipos')
+        tipo = request.form.get('tipo')
         valor = float(request.form.get('valor', 0))
 
         if tipo not in ['entrada', 'saida'] or valor <= 0:
             flash('Tipo de transação inválido ou valor não positivo.', 'danger')
             return redirect(url_for('transacoes'))
 
-        transacoes_db.append({
-            'usuario': session['usuario_logado'],
-            'data': data,
-            'descricao': descricao,
-            'tipo': tipo,
-            'valor': valor
-        })
+        editar_id = request.form.get('editar_id')
+        if editar_id:
+            for t in transacoes_db:
+                if t.get('id') == editar_id and t['usuario'] == email_usuario:
+                    t['data'] = data
+                    t['descricao'] = descricao
+                    t['tipo'] = tipo
+                    t['valor'] = valor
+                    flash('Transação atualizada com sucesso!', 'success')
+                    return redirect(url_for('transacoes'))
+        else:
+            from uuid import uuid4
+            transacoes_db.append({
+                'id': str(uuid4()),
+                'usuario': email_usuario,
+                'data': data,
+                'descricao': descricao,
+                'tipo': tipo,
+                'valor': valor
+            })
+            flash('Transação registrada com sucesso!', 'success')
+            return redirect(url_for('transacoes'))
 
-        flash('Transação registrada com sucesso!', 'success')
-        return redirect(url_for('painel'))
-
-    return render_template('transacoes.html')
+    transacoes_usuario = [t for t in transacoes_db if t['usuario'] == email_usuario]
+    return render_template('transacoes.html', transacoes=transacoes_usuario, transacao_em_edicao=transacao_em_edicao)
 
 
 # Logout
