@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 app.secret_key = 'chave_secreta_solidez'
@@ -56,18 +57,43 @@ def cadastro():
         senha = request.form.get('senha')
         confirmar = request.form.get('confirmar')
 
+        # Verifica se as senhas coincidem
         if senha != confirmar:
             flash('As senhas não coincidem!', 'danger')
             return redirect(url_for('cadastro'))
 
+        # Verifica se o email já está cadastrado
         if any(u['email'] == email for u in usuarios):
             flash('Email já cadastrado!', 'danger')
             return redirect(url_for('cadastro'))
 
+        # Verifica se o CPF já está cadastrado
         if any(u['cpf'] == cpf for u in usuarios):
             flash('CPF já cadastrado!', 'danger')
             return redirect(url_for('cadastro'))
 
+        # Validação da força da senha
+        if len(senha) < 8 or len(senha) > 12:
+            flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        if not re.search(r'[A-Z]', senha):
+            flash('A senha deve conter pelo menos uma letra maiúscula.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        if not re.search(r'[a-z]', senha):
+            flash('A senha deve conter pelo menos uma letra minúscula.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        if not re.search(r'[0-9]', senha):
+            flash('A senha deve conter pelo menos um número.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', senha):
+            flash('A senha deve conter pelo menos um caractere especial.', 'danger')
+            return redirect(url_for('cadastro'))
+
+        # Se todas as validações passarem, adiciona o usuário
         usuarios.append({
             'nome': nome,
             'email': email,
