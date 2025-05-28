@@ -166,6 +166,21 @@ select:focus {
   font-weight: bold;
 }
 
+.login-reverse {
+  color: var(--cor-branco);
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--cor-vermelho);
+  background-color: var(--cor-vermelho);
+  font-weight: bold;
+}
+
+.login-reverse:hover {
+  color: var(--cor-branco);
+  background-color: var(--cor-verde);
+  border: 2px solid var(--cor-verde);
+  font-weight: bold;
+}
 .container .login:hover {
   color: var(--cor-branco);
   background-color: #FF7043;
@@ -318,8 +333,8 @@ main {
 
 .footer-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   background-color: var(--cor-branco);
   border-top: 1px solid var(--cor-cinza);
   font-size: var(--fonte-p);
@@ -331,11 +346,14 @@ main {
 }
 
 .footer-container nav {
+  margin: 5px 15px;
   display: flex;
   margin-right: 30px;
-  gap: 5vw;
-  align-items: center;
+  flex-direction: column;
+  align-items: start;
   font-size: var(--fonte-p);
+  padding-right: 10px;
+  border-right: 1px solid var(--cor-preto);
 }
 
 .footer-container nav a {
@@ -488,6 +506,20 @@ main {
   text-align: center;
   min-width: 200px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card_maior {
+  background-color: var(--cor-branco);
+  border-radius: 15px;
+  padding: 20px 30px;
+  text-align: start;
+  min-width: 640px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.destaque {
+  font-size: var(--fonte-h2);
+  font-weight: bold;
 }
 
 .card h3 {

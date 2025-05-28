@@ -24,11 +24,11 @@
     <section class="painel-section">
       <p class="saudacao">Olá, {{ nome_usuario }}!</p>
 
-      <div class="painel-cards">
-        <div class="card">
+      <div class="card_maior">
           <h3>Saldo Atual</h3>
-          <p class="valor-verde">R$ {{ saldo }}</p>
-        </div>
+          <p class="valor-verde destaque">R$ {{ saldo }}</p>
+      </div>
+      <div class="painel-cards">
 
         <div class="card">
           <h3>Total Entrada</h3>
@@ -75,18 +75,5 @@
       </table>
     </section>
   </main>
-
-  <footer>
-    <div class="footer-container">
-      <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
-      <nav>
-        <a href="/usuario">Usuário</a>
-        <strong><a href="/painel">Painel</a></strong>
-        <a href="/transacoes">Transações</a>
-        <a href="#">Emergência</a>
-        <a href="#">Investimentos</a>
-      </nav>
-    </div>
-  </footer>
 </body>
 </html>

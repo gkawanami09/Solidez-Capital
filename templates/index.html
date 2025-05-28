@@ -93,15 +93,19 @@
 
     <footer>
       <div class="footer-container">
-        <a href="index.html">
-          <img src="../static/img/logo.png" alt="Logo da Solidez Capital" />
-        </a>
+        <div style="display: flex; flex-direction: row;">
         <nav>
           <a href="#quem_somos">Quem Somos?</a>
           <a href="#dicas">Dicas</a>
           <a href="#beneficios">Benefícios</a>
-          <a class="login" href="{{ url_for('login') }}">Login</a>
         </nav>
+
+        <a style="align-self: center;" class="login-reverse" href="{{ url_for('login') }}">Login</a>
+        </div>
+        
+        <a href="index.html">
+          <img src="../static/img/logo.png" alt="Logo da Solidez Capital" />
+        </a>
       </div>
     </footer>
 </body>
