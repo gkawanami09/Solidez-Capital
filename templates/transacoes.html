@@ -28,7 +28,7 @@
 
   <!-- MAIN -->
   <main class="login-section">
-    <div class="login-box" style="max-width: 700px;">
+    <div class="login-box" style="max-width: 1000px;">
       <h1>{% if transacao_em_edicao %}Editar Transação{% else %}Nova Transação{% endif %}</h1>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -57,7 +57,7 @@
 
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo" required>
-          <option value="entrada" {% if transacao_em_edicao and transacao_em_edicao.tipo == 'entrada' %}selected{% endif %}>Entrada</option>
+          <option value="entrada" {% if transacao_em_edicao and transacao_em_edicao.tipo ==  'entrada' %}selected{% endif %}>Entrada</option>
           <option value="saida" {% if transacao_em_edicao and transacao_em_edicao.tipo == 'saida' %}selected{% endif %}>Saída</option>
         </select>
 

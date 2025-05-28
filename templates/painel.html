@@ -22,7 +22,7 @@
 
   <main>
     <section class="painel-section">
-      <p class="saudacao">Olá, {{ session['nome_usuario'] }}!</p>
+      <p class="saudacao">Olá, {{ nome_usuario }}!</p>
 
       <div class="painel-cards">
         <div class="card">
@@ -45,7 +45,7 @@
           <p class="valor-verde">R$ {{ investido }}</p>
         </div>
       </div>
-
+      
       <div class="acoes-painel">
         <a href="/transacoes?tipo=entrada">Nova Entrada</a>
         <a href="/transacoes?tipo=saida">Nova Saída</a>

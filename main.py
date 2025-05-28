@@ -143,9 +143,11 @@ def cadastro():
 # painel
 @app.route('/painel')
 def painel():
+    nome_usuario = session['nome_usuario'].title()
+
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-
+    
     # Recupera o email do usuário atualmente logado, armazenado na sessão.
     usuario_email = session['usuario_logado']
     # Busca o dicionário do usuário correspondente na lista de usuários.
@@ -181,7 +183,8 @@ def painel():
         total_entrada=total_entrada,
         total_saida=total_saida,
         total_investido=total_investido,  # Corrigi o nome da variável
-        transacoes=transacoes[-5:] #-5 foi tulizado para aparecer as ultimas 5 transações
+        transacoes=transacoes[-5:], #-5 foi utilizado para aparecer as ultimas 5 transações
+        nome_usuario=nome_usuario
     )
 # transacoes
 @app.route('/transacoes', methods=['GET', 'POST'])
