@@ -696,3 +696,12 @@ main {
 .acao-botoes button:hover {
   opacity: 0.9;
 }
+
+/* emergencia */
+.card_maio1r {
+  border-radius: 15px;
+  padding: 20px 30px;
+  text-align: start;
+  min-width: 400px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}

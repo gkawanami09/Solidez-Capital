@@ -9,13 +9,13 @@
 <body>
   <header>
     <div class="container-flex">
-      <a href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
+      <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
       <nav>
-        <a href="/usuario">Usuário</a>
-        <strong><a href="/painel">Painel</a></strong>
-        <a href="/transacoes">Transações</a>
-        <a href="#">Emergência</a>
-        <a href="#">Investimentos</a>
+        <strong><a href="{{ url_for('visualizar_usuario') }}">Usuário</a></strong>
+        <a href="{{ url_for('painel') }}">Painel</a>
+        <a href="{{ url_for('transacoes') }}">Transações</a>
+        <a href="{{ url_for('emergencia') }}">Emergência</a>
+        <a href="{{ url_for('investimento') }}">Investimentos</a>
       </nav>
     </div>
   </header>
@@ -42,7 +42,7 @@
 
         <div class="card">
           <h3>Investimentos</h3>
-          <p class="valor-verde">R$ {{ investido }}</p>
+          <p class="valor-verde">R$ {{ total_investido }}</p>
         </div>
       </div>
       
@@ -63,8 +63,8 @@
         <tbody>
           {% for transacao in transacoes %}
           <tr>
-            <td>{{ transacao.data }}</td>
-            <td>{{ transacao.descricao }}</td>
+            <td>{{ formatar_data(transacao.data) }}</td>
+            <td>{{ transacao.descricao.capitalize() }}</td>
             <td>R$ {{ transacao.valor }}</td>
             <td>{{ transacao.tipo.capitalize() }}</td>
           </tr>

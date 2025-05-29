@@ -11,18 +11,14 @@
   <!-- HEADER -->
   <header>
     <div class="container-flex">
-      <a href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Solidez Capital" />
-      </a>
-      <div class="nav">
-        <nav>
-          <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
-          <a href="{{ url_for('painel') }}">Painel</a>
-          <strong><a href="{{ url_for('transacoes') }}">Transações</a></strong>
-          <a href="#">Emergência</a>
-          <a href="#">Investimentos</a>
-        </nav>
-      </div>
+      <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
+      <nav>
+        <strong><a href="{{ url_for('visualizar_usuario') }}">Usuário</a></strong>
+        <a href="{{ url_for('painel') }}">Painel</a>
+        <a href="{{ url_for('transacoes') }}">Transações</a>
+        <a href="{{ url_for('emergencia') }}">Emergência</a>
+        <a href="{{ url_for('investimento') }}">Investimentos</a>
+      </nav>
     </div>
   </header>
 
@@ -81,7 +77,7 @@
         <tbody>
           {% for transacao in transacoes %}
             <tr>
-              <td>{{ transacao.data }}</td>
+              <td>{{ formatar_data(transacao.data) }}</td>
               <td>{{ transacao.descricao }}</td>
               <td>R$ {{ "%.2f"|format(transacao.valor) }}</td>
               <td>{{ transacao.tipo }}</td>

@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
+from uuid import uuid4
+# Importa a função uuid4 do módulo uuid, que serve para gerar identificadores únicos.
+# Isso é útil para garantir que cada transação tenha um "RG" próprio, ou seja, um ID que nunca se repete.
 import re
 
 app = Flask(__name__)
@@ -15,9 +18,15 @@ investimentos_db = []
 # Assim, as variáveis 'now' (data e hora atual) e 'datetime' (módulo completo) estarão disponíveis automaticamente
 # em todos os arquivos .html renderizados, sem precisar passá-las manualmente com render_template.
 @app.context_processor
-def inject_vars(): #vai "injetar" em todos os templates
-    return {'now': datetime.now(), 'datetime': datetime}
-
+def inject():
+    def formatar_data(data):
+        if isinstance(data, datetime):
+            return data.strftime('%d/%m/%Y')
+        try:
+            return datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')
+        except:
+            return data
+    return dict(formatar_data=formatar_data)
 
 # Rota inicial
 @app.route('/')
@@ -52,7 +61,6 @@ def login():
             flash('Email ou senha incorretos!', 'danger')
 
     return render_template('login.html')
-
 
 
 # Cadastro
@@ -108,7 +116,7 @@ def cadastro():
             flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
             return redirect(url_for('cadastro'))
 
-        if not re.search(r'[A-Z]', senha): #re ele vai analisar a senha e verificar se ela tem todos requisitos
+        if not re.search(r'[A-Z]', senha): #re.searche vau procurar em todas os caracteres digitados e vai ver se atende aos requisitos e se não tiver vai retornar
             flash('A senha deve conter pelo menos uma letra maiúscula.', 'danger')
             return redirect(url_for('cadastro'))
 
@@ -143,11 +151,10 @@ def cadastro():
 # painel
 @app.route('/painel')
 def painel():
-    nome_usuario = session['nome_usuario'].title()
 
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    
+    nome_usuario = session['nome_usuario'].title()
     # Recupera o email do usuário atualmente logado, armazenado na sessão.
     usuario_email = session['usuario_logado']
     # Busca o dicionário do usuário correspondente na lista de usuários.
@@ -161,17 +168,19 @@ def painel():
 
     # Filtra as transações do usuário
     transacoes = [t for t in transacoes_db if t['usuario'] == usuario_email]
+    investimentos = [i for i in investimentos_db if i['usuario'] == usuario_email]
 
     # Cálculos
     # Calcula o total de entradas somando os valores de todas as transações do tipo 'entrada'.
     total_entrada = sum(t['valor'] for t in transacoes if t['tipo'] == 'entrada')
     # Calcula o total de saídas somando os valores de todas as transações do tipo 'saida'.
     total_saida = sum(t['valor'] for t in transacoes if t['tipo'] == 'saida')
-    # Calcula o saldo final subtraindo o total de saídas do total de entradas.
-    saldo = total_entrada - total_saida
+
     # Recupera o valor total investido do usuário.
-    # Se a chave 'investido' não existir no dicionário do usuário, retorna 0 como padrão.
-    total_investido = usuario.get('investido', 0) 
+    total_investido = sum(i['valor'] for i in investimentos)
+    
+    # Calcula o saldo final subtraindo o total de saídas do total de entradas.
+    saldo = (total_entrada - total_saida) - total_investido
 
     # Atualiza saldo na sessão
     session['saldo'] = saldo
@@ -186,6 +195,7 @@ def painel():
         transacoes=transacoes[-5:], #-5 foi utilizado para aparecer as ultimas 5 transações
         nome_usuario=nome_usuario
     )
+
 # transacoes
 @app.route('/transacoes', methods=['GET', 'POST'])
 def transacoes():
@@ -209,7 +219,7 @@ def transacoes():
         excluir_id = request.form.get('excluir_id')
         # Percorre a lista de transações usando enumerate, que retorna tanto o índice (i) quanto o item (t) da lista.
         # Isso é necessário porque vamos precisar do índice para excluir a transação da lista.
-        for i, t in enumerate(transacoes_db):
+        for i, t in enumerate(transacoes_db): 
             # Verifica se a transação atual (t) tem o mesmo ID recebido pelo formulário (excluir_id)
             # e se pertence ao usuário logado (comparando o e-mail).
             if t.get('id') == excluir_id and t['usuario'] == email_usuario:
@@ -221,7 +231,7 @@ def transacoes():
 
     # SALVAR/ATUALIZAR TRANSACAO
     if request.method == 'POST' and request.form.get('data'):
-        data = request.form.get('data')
+        data = datetime.strptime(request.form.get('data'), '%Y-%m-%d').strftime('%Y-%m-%d')
         descricao = request.form.get('descricao')
         tipo = request.form.get('tipo')
         valor = float(request.form.get('valor', 0))
@@ -241,9 +251,6 @@ def transacoes():
                     flash('Transação atualizada com sucesso!', 'success')
                     return redirect(url_for('transacoes'))
         else:
-            # Importa a função uuid4 do módulo uuid, que serve para gerar identificadores únicos.
-            # Isso é útil para garantir que cada transação tenha um "RG" próprio, ou seja, um ID que nunca se repete.
-            from uuid import uuid4
             # Adiciona uma nova transação à lista 'transacoes_db'.
             # O campo 'id' recebe um identificador único gerado com uuid4() e convertido para string com str().
             # Esse ID será usado para poder editar ou excluir essa transação depois, sem risco de confundir com outra.
@@ -274,11 +281,9 @@ def logout():
 def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    
-    # A função `next()` retorna o primeiro usuário cujo 'email' bate com o email da sessão.
+        # A função `next()` retorna o primeiro usuário cujo 'email' bate com o email da sessão.
     usuario = next((u for u in usuarios if u['email'] == session['usuario_logado']), None) 
-    
-
+        
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('painel'))
@@ -290,6 +295,9 @@ def editar_usuario():
         nova_senha = request.form.get('nova_senha', '').strip()
         confirmar_senha = request.form.get('confirmar_senha', '').strip()
 
+        # Verifica se já existe algum usuário na lista 'usuarios' com o mesmo email que 'novo_email'.
+        # Se encontrar pelo menos um (mesmo que não seja o próprio usuário), retorna True.
+        # Isso evita que dois usuários tenham o mesmo email no sistema.
         if novo_email != usuario['email'] and any(u['email'] == novo_email for u in usuarios):
             flash("Este email já está em uso!", 'danger')
             return redirect(url_for('editar_usuario'))
@@ -357,6 +365,86 @@ def visualizar_usuario():
     usuario_exibicao = {k: v for k, v in usuario.items() if k != 'senha'}        # k = chave ou key   v = value ou valor
     return render_template('visualizar_usuario.html', usuario=usuario_exibicao)
 
+
+#investimento
+@app.route('/investimento', methods=['GET', 'POST'])
+def investimento():
+    if 'usuario_logado' not in session:
+        return redirect(url_for('login'))
+    
+    email_usuario = session['usuario_logado']  # sempre disponível
+    data = request.form.get('data') or datetime.now().strftime('%Y-%m-%d')  # valor padrão
+
+    if request.method == 'POST':
+        valor = float(request.form.get('valor', 0))
+        local_descricao = request.form.get('local_descricao', '').strip()
+
+        if valor <= 0:
+            flash('O valor do investimento deve ser maior que zero.', 'danger')
+            return redirect(url_for('investimento'))
+
+        # Salva o novo investimento
+        investimentos_db.append({
+            'id': str(uuid4()),
+            'usuario': email_usuario,
+            'valor': valor,
+            'local_descricao': local_descricao,
+            'data': data,
+            'data_registro': datetime.now().strftime('%Y-%m-%d')
+        })
+
+        # Atualiza o valor total investido no usuário
+        for usuario in usuarios:
+            if usuario['email'] == email_usuario:
+                usuario['investido'] = usuario.get('investido', 0) + valor
+                break
+
+        return redirect(url_for('investimento'))
+
+    # Recupera os investimentos do usuário para exibição na tabela
+    investimentos_usuario = [i for i in investimentos_db if i['usuario'] == email_usuario]
+
+    return render_template(
+        'investimento.html',
+        data_padrao=datetime.now().strftime('%Y-%m-%d'),
+        investimentos=investimentos_usuario
+    )
+
+#emergencia
+@app.route('/emergencia', methods=['GET', 'POST'])
+def emergencia():
+    resultado = None
+
+    if request.method == 'POST':
+        try:
+            despesa_mensal = float(request.form.get('despesa_mensal', 0))
+            meses_cobertura = int(request.form.get('meses_cobertura', 0))
+            prazo = int(request.form.get('prazo', 0))
+
+            if despesa_mensal <= 0:
+                flash('A despesa mensal deve ser maior que zero', 'danger')
+            elif meses_cobertura <= 0:
+                flash('Os meses de cobertura devem ser maiores que zero', 'danger')
+            elif prazo <= 0:
+                flash('O prazo deve ser maior que zero', 'danger')
+            else:
+                reserva_total = despesa_mensal * meses_cobertura
+                reserva_mensal = reserva_total / prazo
+
+                resultado = {
+                    'reserva_total': f"{reserva_total:.2f}",
+                    'reserva_mensal': f"{reserva_mensal:.2f}",
+                    'meses_cobertura': meses_cobertura,
+                    'prazo': prazo,
+                    'despesa_mensal': f"{despesa_mensal:.2f}"
+                }
+        except ValueError:
+            flash('Por favor, insira valores numéricos válidos', 'danger')
+        except Exception as e:
+            app.logger.error(f"Erro no cálculo de emergência: {str(e)}")
+            flash('Ocorreu um erro ao calcular sua reserva de emergência', 'danger')
+
+    return render_template('emergencia.html', resultado=resultado)
 
 # Iniciar servidor
 if __name__ == '__main__':

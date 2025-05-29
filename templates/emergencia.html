@@ -3,35 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solidez Capital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Solidez Capital - Emergência</title>
 </head>
 <body>
     <header>
         <div class="container-flex">
-            <a href="index.html"> <img src="../static/img/logo.png" alt=""></a>
-        <nav>
-            <a href="usuarios.html">Usuário</a>
-            <a href="painel.html">Painel </a>
-            <a href="transacoes.html">Transações</a>
-            <a href="emergencia.html">Emergência</a>
-            <a href="investimentos.html">Investimentos</a>
-        </nav>
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Solidez Capital"></a>
+            <nav>
+                <strong><a href="{{ url_for('visualizar_usuario') }}">Usuário</a></strong>
+                <a href="{{ url_for('painel') }}">Painel</a>
+                <a href="{{ url_for('transacoes') }}">Transações</a>
+                <a href="{{ url_for('emergencia') }}">Emergência</a>
+                <a href="{{ url_for('investimento') }}">Investimentos</a>
+            </nav>
         </div>
     </header>
-    <main>
-        <section>
-            <div>
-                <h1>Reserva de Emergência</h1>
-                <form>
-                    <label for="valor">Média Mensal de Despesas:</label>
-                    <input type="number" id="valor" name="valor" step="0.01" min="0" placeholder="R$0,00" required> <br>
-                    <label for="meses">Meses de Cobertura:</label>
-                    <input  type="number" for="meses" id="meses" name="meses" placeholder="Digite a Quantidade de Meses:" required> <br>
-                    <label for="prazo">Prazo para Atingir essa Meta:</label>
-                    <input  type="number" for="meses" id="meses" name="meses" placeholder="Digite a Quantidade de Meses:" required> <br>
-                    <button type="submit">Calcular</button>
-                </form>
+    
+    <main class="usuario-section">
+        <section class="usuario-box">
+            <h1 class="destaque">Reserva de Emergência</h1>
+            <form method="POST" action="{{ url_for('emergencia') }}">
+                <label for="despesa_mensal">Média Mensal de Despesas:</label>
+                <input type="number" id="despesa_mensal" name="despesa_mensal" step="0.01" min="0" placeholder="R$ 0,00" required>
+
+                <label for="meses_cobertura">Meses de Cobertura:</label>
+                <input type="number" id="meses_cobertura" name="meses_cobertura" min="1" placeholder="Quantidade de meses" required>
+
+                <label for="prazo">Prazo para Atingir essa Meta:</label>
+                <input type="number" id="prazo" name="prazo" min="1" placeholder="Quantidade de meses" required>
+
+                <div class="buttons">
+                    <button type="submit" class="login">Calcular</button>
+                </div>
+            </form>
+
+            {% if resultado %}
+            <div class="card_maior1" style="margin-top: 30px;">
+                <h2 class="destaque">Resultado:</h2>
+                <p><strong>Reserva Total Necessária:</strong> R$ {{ resultado.reserva_total }}</p>
+                <p><strong>Valor Mensal a Guardar:</strong> R$ {{ resultado.reserva_mensal }}</p>
+                <p><strong>Para cobrir:</strong> {{ resultado.meses_cobertura }} meses de despesas</p>
+                <p><strong>Prazo:</strong> {{ resultado.prazo }} meses</p>
             </div>
+            {% endif %}
         </section>        
     </main>
 </body>
