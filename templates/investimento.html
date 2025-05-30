@@ -1,76 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Solidez Capital</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Investimentos - Solidez Capital</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
+
+  <!-- HEADER -->
+  <header>
     <div class="container-flex">
-    <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
-    <nav>
+      <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
+      <nav>
         <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
         <a href="{{ url_for('painel') }}">Painel</a>
         <a href="{{ url_for('transacoes') }}">Transações</a>
         <a href="{{ url_for('emergencia') }}">Emergência</a>
         <strong><a href="{{ url_for('investimento') }}">Investimentos</a></strong>
-    </nav>
+      </nav>
     </div>
-</header>
+  </header>
 
-    <main style="flex-direction: column;" class="login-section">
-        <section class="login-box" style="max-width: 600px; width: 100%;">
-            <h1>Adicionar Investimento</h1>
+  <!-- MAIN -->
+  <main class="login-section">
+    <div class="login-box" style="max-width: 1000px;">
+      <h1>Adicionar Investimento</h1>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+      {# flashes #}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div>
+            {% for category, message in messages %}
+              <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
 
-            <form action="/investimento" method="POST">
-                <label for="valor">Valor do Investimento (R$)</label>
-                <input type="number" id="valor" name="valor" step="0.01" min="0.01" required placeholder="Ex: 1000.00"/>
+      <form action="{{ url_for('investimento') }}" method="POST">
+        <label for="valor">Valor do Investimento (R$):</label>
+        <input
+          type="number"
+          id="valor"
+          name="valor"
+          step="0.01"
+          min="0.01"
+          placeholder="Ex: 1000.00"
+          required
+        >
 
-                <label for="descricao">Local-Descrição</label>
-                <input id="descricao" name="local_descricao" placeholder="Detalhes sobre o investimento"/>
+        <label for="descricao">Local / Descrição:</label>
+        <input
+          type="text"
+          id="descricao"
+          name="local_descricao"
+          placeholder="Detalhes sobre o investimento"
+          style="text-transform: capitalize;"
+        >
 
-                <label for="data">Data do Investimento</label>
-                <input type="date" id="data" name="data" value="{{ data_padrao }}"/>
+        <label for="data">Data do Investimento:</label>
+        <input type="date" id="data" name="data" value="{{ data_padrao }}"  max="2025-12-31" required>
 
-                <div class="buttons">
-                    <button type="submit" class="login">Salvar</button>
-                    <a href="/painel" class="cancelar">Cancelar</a>
-                </div>
-            </form>
-        </section>
+        <div class="buttons">
+          <a class="cancelar" href="{{ url_for('painel') }}">Voltar ao Painel</a>
+          <button class="voltar" type="submit">Salvar</button>
         </div>
-        <h2 style="margin-top: 40px;">Últimos Investimentos</h2>
-        <table class="tabela-transacoes">
+      </form>
+
+      <h2 style="margin-top: 40px; margin-bottom: 15px">Últimos Investimentos</h2>
+      <table class="tabela-transacoes">
         <thead>
-        <tr>
-        <th>Data</th>
-        <th>Descrição</th>
-        <th>Valor</th>
-        </tr>
+          <tr>
+            <th>Data</th>
+            <th style="text-align:left;">Descrição</th>
+            <th style="text-align:right;">Valor</th>
+          </tr>
         </thead>
         <tbody>
-        {% for investimento in investimentos %}
-        <tr>
-        <td>{{ formatar_data(investimento.data) }}</td>
-        <td>{{ investimento.local_descricao }}</td>
-        <td>R$ {{ '%.2f' | format(investimento.valor) }}</td>
-        </tr>
-        {% else %}
-        <tr><td colspan="3">Nenhum investimento registrado.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-    </main>
+          {% for investimento in investimentos %}
+            <tr>
+              <td>{{ formatar_data(investimento.data) }}</td>
+              <td style="text-align:left;">{{ investimento.local_descricao.capitalize() }}</td>
+              <td style="text-align:right;">R$ {{ '%.2f'|format(investimento.valor) }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3">Nenhum investimento registrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
 </body>
 </html>

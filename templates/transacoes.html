@@ -43,57 +43,99 @@
         {% endif %}
 
         <label for="data">Data:</label>
-        <input type="date" id="data" name="data" value="{{ transacao_em_edicao.data if transacao_em_edicao else '' }}" required>
+        <input
+          type="date"
+          id="data"
+          name="data"
+          value="{{ transacao_em_edicao.data if transacao_em_edicao else '' }}"
+          max="2025-12-31"
+          required
+        >
 
         <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" value="{{ transacao_em_edicao.descricao if transacao_em_edicao else '' }}" placeholder="Ex: Compra, Salário..." required>
+        <input
+          type="text"
+          id="descricao"
+          name="descricao"
+          value="{{ transacao_em_edicao.descricao if transacao_em_edicao else '' }}"
+          placeholder="Ex: Compra, Salário..."
+          required
+        >
 
         <label for="valor">Valor (R$):</label>
-        <input type="number" id="valor" name="valor" step="0.01" min="0.01" value="{{ transacao_em_edicao.valor if transacao_em_edicao else '' }}" required>
+        <input
+          type="number"
+          id="valor"
+          name="valor"
+          step="0.01"
+          min="0.01"
+          value="{{ transacao_em_edicao.valor if transacao_em_edicao else '' }}"
+          required
+        >
 
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo" required>
-          <option value="entrada" {% if transacao_em_edicao and transacao_em_edicao.tipo ==  'entrada' %}selected{% endif %}>Entrada</option>
-          <option value="saida" {% if transacao_em_edicao and transacao_em_edicao.tipo == 'saida' %}selected{% endif %}>Saída</option>
+          <option value="entrada"
+            {% if (transacao_em_edicao and transacao_em_edicao.tipo == 'entrada')
+                  or (not transacao_em_edicao and tipo_predefinido != 'saida') %}
+              selected
+            {% endif %}>
+            Entrada
+          </option>
+          <option value="saida"
+            {% if (transacao_em_edicao and transacao_em_edicao.tipo == 'saida')
+                  or (not transacao_em_edicao and tipo_predefinido == 'saida') %}
+              selected
+            {% endif %}>
+            Saída
+          </option>
         </select>
 
         <div class="buttons">
           <a class="cancelar" href="{{ url_for('painel') }}">Voltar ao Painel</a>
-          <button class="voltar" type="submit">{{ 'Salvar Alterações' if transacao_em_edicao else 'Salvar' }}</button>
+          <button class="voltar" type="submit">
+            {{ 'Salvar Alterações' if transacao_em_edicao else 'Salvar' }}
+          </button>
         </div>
       </form>
 
-      <h2 style="margin-top: 40px;">Últimas Transações</h2>
+      <h2 style="margin-top: 40px; margin-bottom: 15px;">Últimas Movimentações</h2>
       <table class="tabela-transacoes">
         <thead>
           <tr>
             <th>Data</th>
-            <th>Descrição</th>
-            <th>Valor</th>
             <th>Tipo</th>
+            <th style="text-align:right;">Valor</th>
+            <th style="text-align:left;">Descrição</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {% for transacao in transacoes %}
+          {% for item in extrato %}
             <tr>
-              <td>{{ formatar_data(transacao.data) }}</td>
-              <td>{{ transacao.descricao }}</td>
-              <td>R$ {{ "%.2f"|format(transacao.valor) }}</td>
-              <td>{{ transacao.tipo }}</td>
+              <td>{{ formatar_data(item.data) }}</td>
+              <td>{{ item.tipo.capitalize() }}</td>
+              <td style="text-align:right;">R$ {{ '%.2f'|format(item.valor) }}</td>
+              <td style="text-align:left;">{{ item.descricao.capitalize() }}</td>
               <td>
-                <div class="acao-botoes">
-                  <form method="POST">
-                    <input type="hidden" name="editar_id" value="{{ transacao.id }}">
-                    <button type="submit" class="editar">Editar</button>
-                  </form>
-                  <form method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta transação?')">
-                    <input type="hidden" name="excluir_id" value="{{ transacao.id }}">
-                    <button type="submit" class="excluir">Excluir</button>
-                  </form>
-                </div>
+                {% if item.tipo != 'investimento' %}
+                  <div class="acao-botoes">
+                    <!-- Editar -->
+                    <form method="POST">
+                      <input type="hidden" name="editar_id" value="{{ item.id }}">
+                      <button type="submit" class="editar">Editar</button>
+                    </form>
+                    <!-- Excluir -->
+                    <form method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta transação?')">
+                      <input type="hidden" name="excluir_id" value="{{ item.id }}">
+                      <button type="submit" class="excluir">Excluir</button>
+                    </form>
+                  </div>
+                {% endif %}
               </td>
             </tr>
+          {% else %}
+            <tr><td colspan="5">Nenhuma movimentação registrada.</td></tr>
           {% endfor %}
         </tbody>
       </table>

@@ -6,7 +6,7 @@
   <title>Solidez Capital - Painel</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body style="background-color: var(--cor-fundo);">
   <header>
     <div class="container-flex">
       <a href="{{ url_for('index') }}"><img src="../static/img/logo.png" alt="Logo"></a>
@@ -25,21 +25,18 @@
       <p class="saudacao">Olá, {{ nome_usuario }}!</p>
 
       <div class="card_maior">
-          <h3>Saldo Atual</h3>
-          <p class="valor-verde destaque">R$ {{ saldo }}</p>
+        <h3>Saldo Atual</h3>
+        <p class="valor-verde destaque">R$ {{ saldo }}</p>
       </div>
       <div class="painel-cards">
-
         <div class="card">
           <h3>Total Entrada</h3>
           <p class="valor-verde">R$ {{ total_entrada }}</p>
         </div>
-
         <div class="card">
           <h3>Total Saída</h3>
           <p class="valor-vermelho">R$ {{ total_saida }}</p>
         </div>
-
         <div class="card">
           <h3>Investimentos</h3>
           <p class="valor-verde">R$ {{ total_investido }}</p>
@@ -47,29 +44,30 @@
       </div>
       
       <div class="acoes-painel">
-        <a href="/transacoes?tipo=entrada">Nova Entrada</a>
-        <a href="/transacoes?tipo=saida">Nova Saída</a>
+        <a href="{{ url_for('transacoes') }}?tipo=entrada">Nova Entrada</a>
+        <a href="{{ url_for('transacoes') }}?tipo=saida">Nova Saída</a>
       </div>
 
+      <h2 style="margin-top: 40px; margin-bottom: 15px;">Últimas Movimentações</h2>
       <table class="tabela-transacoes">
         <thead>
           <tr>
             <th>Data</th>
-            <th>Descrição</th>
-            <th>Valor</th>
             <th>Tipo</th>
+            <th style="text-align:right;">Valor</th>
+            <th style="text-align:left;">Descrição</th>
           </tr>
         </thead>
         <tbody>
-          {% for transacao in transacoes %}
-          <tr>
-            <td>{{ formatar_data(transacao.data) }}</td>
-            <td>{{ transacao.descricao.capitalize() }}</td>
-            <td>R$ {{ transacao.valor }}</td>
-            <td>{{ transacao.tipo.capitalize() }}</td>
-          </tr>
+          {% for item in extrato %}
+            <tr>
+              <td>{{ formatar_data(item.data) }}</td>
+              <td>{{ item.tipo.capitalize() }}</td>
+              <td style="text-align:right;">R$ {{ '%.2f'|format(item.valor) }}</td>
+              <td style="text-align:left;">{{ item.descricao.capitalize() }}</td>
+            </tr>
           {% else %}
-          <tr><td colspan="4">Nenhuma transação registrada.</td></tr>
+            <tr><td colspan="4">Nenhuma movimentação registrada.</td></tr>
           {% endfor %}
         </tbody>
       </table>

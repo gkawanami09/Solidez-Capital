@@ -16,7 +16,12 @@
         <a href="#quem_somos">Quem Somos?</a>
         <a href="#dicas">Dicas</a>
         <a href="#beneficios">Benefícios</a>
+        {% if 'usuario_logado' not in session %}
         <a class="login" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+        {% if 'usuario_logado' in session %}
+        <a href="{{url_for ('painel')}}">Painel</a>
+        {% endif %}
       </nav>
     </div>
   </header>
@@ -84,26 +89,32 @@
           <p>Defina metas e programe sua reserva</p>
         </div>
       </div>
-
+      
+      {% if 'usuario_logado' not in session %}
       <div class="botao">
-        <a href="{{ url_for('login') }}">Faça seu Cadastro Agora!!</a>
+        <a href="{{ url_for('cadastro') }}">Faça seu Cadastro Agora!!</a>
       </div>
+      {% endif %}
     </section>
   </main>
 
     <footer>
       <div class="footer-container">
         <div style="display: flex; flex-direction: row;">
-        <nav>
+        <nav style="font-size: 17.6px;">
           <a href="#quem_somos">Quem Somos?</a>
           <a href="#dicas">Dicas</a>
           <a href="#beneficios">Benefícios</a>
         </nav>
-
-        <a style="align-self: center;" class="login-reverse" href="{{ url_for('login') }}">Login</a>
+        {% if 'usuario_logado' not in session %}
+        <a style="align-self: center;" class="login" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+        {% if 'usuario_logado' in session %}
+        <a style="align-self: center;" class="login" href="{{ url_for('painel') }}">Painel</a>
+        {% endif %}
         </div>
         
-        <a href="index.html">
+        <a href="{{ url_for('index') }}">
           <img src="../static/img/logo.png" alt="Logo da Solidez Capital" />
         </a>
       </div>
