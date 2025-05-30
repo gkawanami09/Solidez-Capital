@@ -13,10 +13,7 @@ investimentos_db = []
 def extrato_por_data(item):
         return item['data']
 
-# Variáveis globais acessíveis nos templates
-# Este decorador @app.context_processor define uma função que injeta variáveis globais nos templates HTML.
-# Assim, as variáveis 'now' (data e hora atual) e 'datetime' (módulo completo) estarão disponíveis automaticamente
-# em todos os arquivos .html renderizados, sem precisar passá-las manualmente com render_template.
+
 @app.context_processor
 def inject():
     def formatar_data(data):
@@ -43,18 +40,13 @@ def login():
         email = request.form['email']
         senha = request.form['senha']
 
-        # Procura na lista "usuarios" o primeiro usuário cujo email seja igual ao email da sessão (usuário logado).
-        # Se não encontrar nenhum, retorna None para evitar erro.
+
         usuario = None
         for u in usuarios:
             if u['email'] == email and u['senha'] == senha:
                 usuario = u
                 break
 
-        # Se o usuário foi encontrado (login válido), os dados são armazenados na sessão para manter o usuário logado.
-        # - 'usuario_logado': salva o e-mail do usuário logado.
-        # - 'nome_usuario': salva o nome do usuário, usado para exibir saudações personalizadas.
-        # - 'saldo': salva o saldo atual, obtido com .get() para evitar erro caso o campo não exista.
         if usuario:
             session['usuario_logado'] = usuario['email']
             session['nome_usuario'] = usuario['nome']
@@ -143,7 +135,7 @@ def painel():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
-    nome_usuario = session['nome_usuario'].title()
+    nome_usuario = session['nome_usuario'].title() 
     usuario_email = session['usuario_logado']
     usuario = None
     for u in usuarios:
@@ -156,7 +148,7 @@ def painel():
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('login'))
 
-    # Filtra transações e investimentos
+
     # Transações
     transacoes = []
     for t in transacoes_db:
@@ -209,7 +201,6 @@ def painel():
             'descricao':i['local_descricao']
         })
 
-    # Define uma função de chave em vez de lambda
     
     extrato.sort(key=extrato_por_data, reverse=True)
 
@@ -222,7 +213,7 @@ def painel():
         total_entrada=total_entrada,
         total_saida=total_saida,
         total_investido=total_investido,
-        extrato=extrato         # ← envia o extrato completo ao template
+        extrato=extrato         
     )
 
 @app.route('/transacoes', methods=['GET', 'POST'])
@@ -233,7 +224,6 @@ def transacoes():
     email_usuario = session['usuario_logado']
     transacao_em_edicao = None
 
-    # Captura ?tipo=entrada|saida para pré-selecionar o <select>
     tipo_predefinido = request.args.get('tipo', '')
 
     # --- EDITAR TRANSACAO (clicou no botão “Editar”) ---
@@ -250,7 +240,7 @@ def transacoes():
     if request.method == 'POST' and 'excluir_id' in request.form:
         excluir_id = request.form.get('excluir_id')
 
-        for i, t in enumerate(transacoes_db):
+        for i, t in enumerate(transacoes_db): 
             if t.get('id') == excluir_id and t['usuario'] == email_usuario:
                 del transacoes_db[i]
                 flash('Transação excluída com sucesso!', 'success')
