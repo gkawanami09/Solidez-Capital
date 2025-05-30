@@ -11,10 +11,10 @@
         <div class="container-flex">
             <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Solidez Capital"></a>
             <nav>
-                <strong><a href="{{ url_for('visualizar_usuario') }}">Usuário</a></strong>
+                <a href="{{ url_for('visualizar_usuario') }}">Usuário</a>
                 <a href="{{ url_for('painel') }}">Painel</a>
                 <a href="{{ url_for('transacoes') }}">Transações</a>
-                <a href="{{ url_for('emergencia') }}">Emergência</a>
+                <strong><a href="{{ url_for('emergencia') }}">Emergência</a></strong>
                 <a href="{{ url_for('investimento') }}">Investimentos</a>
             </nav>
         </div>
