@@ -26,7 +26,12 @@
 
       <div class="card_maior">
         <h3>Saldo Atual</h3>
+        {% if saldo >= 0 %}
         <p class="valor-verde destaque">R$ {{ saldo }}</p>
+        {% endif %} 
+        {% if saldo < 0 %}
+        <p class="valor-vermelho destaque">R$ {{ saldo }}</p>
+        {% endif %}
       </div>
       <div class="painel-cards">
         <div class="card">
