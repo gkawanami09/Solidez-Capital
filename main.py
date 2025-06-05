@@ -10,8 +10,9 @@ usuarios = []
 transacoes_db = []
 investimentos_db = []
 
+
 def extrato_por_data(item):
-        return item['data']
+    return item['data']
 
 
 @app.context_processor
@@ -23,7 +24,9 @@ def inject():
             return datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')
         except:
             return data
+
     return dict(formatar_data=formatar_data)
+
 
 # Rota inicial
 @app.route('/')
@@ -39,7 +42,6 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
-
 
         usuario = None
         for u in usuarios:
@@ -64,35 +66,35 @@ def login():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        nome       = request.form.get('nome')
-        email      = request.form.get('email')
-        cpf        = request.form.get('cpf')
-        senha      = request.form.get('senha', '').strip()
-        confirmar  = request.form.get('confirmar', '').strip()
+        nome = request.form.get('nome')
+        email = request.form.get('email')
+        cpf = request.form.get('cpf')
+        senha = request.form.get('senha', '').strip()
+        confirmar = request.form.get('confirmar', '').strip()
 
         # conferência de senhas
         if senha != confirmar:
             flash('As senhas não coincidem!', 'danger')
             return redirect(url_for('cadastro'))
 
-        #email já cadastrado?
+        # email já cadastrado?
         for u in usuarios:
             if u['email'] == email:
                 flash('Email já cadastrado!', 'danger')
                 return redirect(url_for('cadastro'))
 
-        #CPF já cadastrado?
+        # CPF já cadastrado?
         for u in usuarios:
             if u['cpf'] == cpf:
                 flash('CPF já cadastrado!', 'danger')
                 return redirect(url_for('cadastro'))
 
-        #comprimento da senha
+        # comprimento da senha
         if len(senha) < 8 or len(senha) > 12:
             flash('A senha deve ter entre 8 e 12 caracteres.', 'danger')
             return redirect(url_for('cadastro'))
 
-        #validação de complexidade da senha
+        # validação de complexidade da senha
         maiuscula = False
         minuscula = False
         numero = False
@@ -115,13 +117,13 @@ def cadastro():
             )
             return redirect(url_for('cadastro'))
 
-        #tudo ok: cria o usuário
+        # tudo ok: cria o usuário
         usuarios.append({
-            'nome':      nome,
-            'email':     email,
-            'cpf':       cpf,
-            'senha':     senha,
-            'saldo':     0,
+            'nome': nome,
+            'email': email,
+            'cpf': cpf,
+            'senha': senha,
+            'saldo': 0,
             'investido': 0
         })
         flash('Cadastro realizado com sucesso! Faça login.', 'success')
@@ -135,7 +137,7 @@ def painel():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
 
-    nome_usuario = session['nome_usuario'].title() 
+    nome_usuario = session['nome_usuario'].title()
     usuario_email = session['usuario_logado']
     usuario = None
     for u in usuarios:
@@ -143,11 +145,9 @@ def painel():
             usuario = u
             break
 
-
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('login'))
-
 
     # Transações
     transacoes = []
@@ -187,21 +187,20 @@ def painel():
     extrato = []
     for t in transacoes:
         extrato.append({
-            'data':t['data'],
-            'tipo':t['tipo'],
-            'valor':t['valor'],
-            'descricao':t['descricao']
-        })
-        
-    for i in investimentos:
-        extrato.append({
-            'data':i['data'],
-            'tipo':'investimento',
-            'valor':i['valor'],
-            'descricao':i['local_descricao']
+            'data': t['data'],
+            'tipo': t['tipo'],
+            'valor': t['valor'],
+            'descricao': t['descricao']
         })
 
-    
+    for i in investimentos:
+        extrato.append({
+            'data': i['data'],
+            'tipo': 'investimento',
+            'valor': i['valor'],
+            'descricao': i['local_descricao']
+        })
+
     extrato.sort(key=extrato_por_data, reverse=True)
 
     extrato = extrato[:5]
@@ -213,8 +212,9 @@ def painel():
         total_entrada=total_entrada,
         total_saida=total_saida,
         total_investido=total_investido,
-        extrato=extrato         
+        extrato=extrato
     )
+
 
 @app.route('/transacoes', methods=['GET', 'POST'])
 def transacoes():
@@ -235,17 +235,15 @@ def transacoes():
                 transacao_em_edicao = t
                 break
 
-
     # --- EXCLUIR TRANSACAO ---
     if request.method == 'POST' and 'excluir_id' in request.form:
         excluir_id = request.form.get('excluir_id')
 
-        for i, t in enumerate(transacoes_db): 
+        for i, t in enumerate(transacoes_db):
             if t.get('id') == excluir_id and t['usuario'] == email_usuario:
                 del transacoes_db[i]
                 flash('Transação excluída com sucesso!', 'success')
                 return redirect(url_for('transacoes'))
-
 
     # --- SALVAR OU ATUALIZAR TRANSACAO ---
     if request.method == 'POST' and request.form.get('data'):
@@ -254,14 +252,12 @@ def transacoes():
         tipo = request.form.get('tipo')
         valor = float(request.form.get('valor', 0))
 
-
         if tipo not in ['entrada', 'saida'] or valor <= 0:
             flash('Tipo de transação inválido ou valor não positivo.', 'danger')
             return redirect(url_for('transacoes'))
 
-
         editar_id = request.form.get('editar_id')
-        
+
         if editar_id:
             # Atualiza existente
             for t in transacoes_db:
@@ -272,7 +268,7 @@ def transacoes():
                     t['valor'] = valor
                     flash('Transação atualizada com sucesso!', 'success')
                     return redirect(url_for('transacoes'))
-                
+
         else:
             # Cria nova
             transacoes_db.append({
@@ -285,7 +281,6 @@ def transacoes():
             })
             flash('Transação registrada com sucesso!', 'success')
             return redirect(url_for('transacoes'))
-
 
     # Filtra transações do usuário
     transacoes_usuario = []
@@ -305,11 +300,11 @@ def transacoes():
 
     for t in transacoes_usuario:
         extrato.append({
-            'id':t['id'],
-            'data':t['data'],
-            'tipo':t['tipo'],
-            'valor':t['valor'],
-            'descricao':t['descricao']
+            'id': t['id'],
+            'data': t['data'],
+            'tipo': t['tipo'],
+            'valor': t['valor'],
+            'descricao': t['descricao']
         })
 
     for i in investimentos_usuario:
@@ -329,6 +324,7 @@ def transacoes():
         extrato=extrato
     )
 
+
 # Logout
 @app.route('/logout')
 def logout():
@@ -342,13 +338,13 @@ def logout():
 def editar_usuario():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    
+
     usuario = None
     for u in usuarios:
         if u['email'] == session['usuario_logado']:
             usuario = u
             break
-        
+
     if not usuario:
         flash("Usuário não encontrado!", 'danger')
         return redirect(url_for('painel'))
@@ -388,7 +384,7 @@ def editar_usuario():
             caracterpcd = False
             for s in nova_senha:
                 if s.isupper():
-                   maiuscula = True
+                    maiuscula = True
                 if s.islower():
                     minuscula = True
                 if s.isdigit():
@@ -442,40 +438,63 @@ def visualizar_usuario():
     return render_template('visualizar_usuario.html', usuario=usuario_exibicao)
 
 
-#investimento
+# investimento
 @app.route('/investimento', methods=['GET', 'POST'])
 def investimento():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    
-    email_usuario = session['usuario_logado']  # sempre disponível
-    data = request.form.get('data') or datetime.now().strftime('%Y-%m-%d')  # valor padrão
+
+    email_usuario = session['usuario_logado']
+    data = request.form.get('data') or datetime.now().strftime('%Y-%m-%d')
+
+
+    total_entrada = sum(t['valor'] for t in transacoes_db
+                        if t['usuario'] == email_usuario and t['tipo'] == 'entrada')
+    total_saida = sum(t['valor'] for t in transacoes_db
+                      if t['usuario'] == email_usuario and t['tipo'] == 'saida')
+    total_investido = sum(i['valor'] for i in investimentos_db
+                          if i['usuario'] == email_usuario)
+
+    saldo_real = total_entrada - total_saida - total_investido
 
     if request.method == 'POST':
-        valor = float(request.form.get('valor', 0))
-        local_descricao = request.form.get('local_descricao', '').strip()
+        try:
+            valor = float(request.form.get('valor', 0))
+            local_descricao = request.form.get('local_descricao', '').strip()
 
-        if valor <= 0:
-            flash('O valor do investimento deve ser maior que zero.', 'danger')
+            if valor <= 0:
+                flash('O valor do investimento deve ser maior que zero.', 'danger')
+                return redirect(url_for('investimento'))
+
+            # Verificar se o valor do investimento é maior que o saldo real
+            if valor > saldo_real:
+                flash('Saldo insuficiente para realizar este investimento.', 'danger')
+                return redirect(url_for('investimento'))
+
+            # Salva o novo investimento
+            investimentos_db.append({
+                'id': str(uuid4()),
+                'usuario': email_usuario,
+                'valor': valor,
+                'local_descricao': local_descricao,
+                'data': data,
+                'data_registro': datetime.now().strftime('%Y-%m-%d')
+            })
+
+            # Atualiza o valor total investido no usuário
+            for usuario in usuarios:
+                if usuario['email'] == email_usuario:
+                    usuario['investido'] = usuario.get('investido', 0) + valor
+                    # Não precisa deduzir do saldo aqui, pois o saldo real é calculado dinamicamente
+                    session['saldo'] = saldo_real - valor  # Atualiza na sessão
+                    break
+
+            flash('Investimento realizado com sucesso!', 'success')
             return redirect(url_for('investimento'))
 
-        # Salva o novo investimento
-        investimentos_db.append({
-            'id': str(uuid4()),
-            'usuario': email_usuario,
-            'valor': valor,
-            'local_descricao': local_descricao,
-            'data': data,
-            'data_registro': datetime.now().strftime('%Y-%m-%d')
-        })
-
-        # Atualiza o valor total investido no usuário
-        for usuario in usuarios:
-            if usuario['email'] == email_usuario:
-                usuario['investido'] = usuario.get('investido', 0) + valor
-                break
-
-        return redirect(url_for('investimento'))
+        except ValueError:
+            flash('Por favor, insira um valor numérico válido.', 'danger')
+            return redirect(url_for('investimento'))
 
     # Recupera os investimentos do usuário para exibição na tabela
     investimentos_usuario = []
@@ -486,15 +505,18 @@ def investimento():
     return render_template(
         'investimento.html',
         data_padrao=datetime.now().strftime('%Y-%m-%d'),
-        investimentos=investimentos_usuario
+        investimentos=investimentos_usuario,
+        saldo=saldo_real  # Passa o saldo real para o template
     )
 
-#emergencia
+
+
+# emergencia
 @app.route('/emergencia', methods=['GET', 'POST'])
 def emergencia():
     if 'usuario_logado' not in session:
         return redirect(url_for('login'))
-    
+
     resultado = None
 
     if request.method == 'POST':
