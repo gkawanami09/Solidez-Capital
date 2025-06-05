@@ -698,10 +698,137 @@ main {
 }
 
 /* emergencia */
-.card_maio1r {
+/* Container principal */
+.emergencia-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 10vh 5%;
+  background-color: var(--cor-fundo);
+  flex-wrap: wrap;
+}
+
+/* Caixa do formulário */
+.emergencia-form-box {
+  background-color: var(--cor-branco);
+  padding: 30px 40px;
   border-radius: 15px;
-  padding: 20px 30px;
-  text-align: start;
-  min-width: 400px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Caixa do resultado */
+.emergencia-resultado-box {
+  background-color: var(--cor-branco);
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 500px;
+  align-self: flex-start;
+}
+
+.resultado-pro {
+  background-color: var(--cor-branco);
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.resultado-pro img {
+  width: 80px;
+  margin-bottom: 15px;
+}
+
+.titulo-resultado {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.tabela-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.linha-resultado {
+  background-color: var(--cor-fundo);
+  border-radius: 10px;
+  padding: 14px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  font-size: 1em;
+  font-weight: 500;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.linha-resultado span {
+  text-align: left;
+  color: var(--cor-preto);
+}
+
+.linha-resultado .valor {
+  text-align: right;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Estilos do formulário */
+.emergencia-form-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.emergencia-form-box label {
+  font-weight: 500;
+  color: var(--cor-preto);
+}
+
+.emergencia-form-box input {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.buttons {
+  margin-top: 15px;
+}
+
+.login {
+  background-color: var(--cor-primaria);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  width: 100%;
+}
+
+/* Responsividade */
+@media (max-width: 1100px) {
+  .emergencia-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .emergencia-form-box,
+  .emergencia-resultado-box {
+    max-width: 100%;
+    width: 90%;
+  }
 }

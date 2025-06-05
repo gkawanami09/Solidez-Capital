@@ -20,34 +20,53 @@
         </div>
     </header>
     
-    <main class="usuario-section">
-        <section class="usuario-box">
-            <h1 class="destaque">Reserva de Emergência</h1>
-            <form method="POST" action="{{ url_for('emergencia') }}">
-                <label for="despesa_mensal">Média Mensal de Despesas:</label>
-                <input type="number" id="despesa_mensal" name="despesa_mensal" step="0.01" min="0" placeholder="R$ 0,00" required>
+<main class="emergencia-container">
+    {% if request.method == 'GET' %}
+  <section class="emergencia-form-box">
+    <h1 class="destaque">Reserva de Emergência</h1>
+    <form method="POST" action="{{ url_for('emergencia') }}">
+      <label for="despesa_mensal">Média Mensal de Despesas:</label>
+      <input type="number" id="despesa_mensal" name="despesa_mensal" step="0.01" min="0" placeholder="R$ 0,00" required>
 
-                <label for="meses_cobertura">Meses de Cobertura:</label>
-                <input type="number" id="meses_cobertura" name="meses_cobertura" min="1" placeholder="Quantidade de meses" required>
+      <label for="meses_cobertura">Meses de Cobertura:</label>
+      <input type="number" id="meses_cobertura" name="meses_cobertura" min="1" placeholder="Quantidade de meses" required>
 
-                <label for="prazo">Prazo para Atingir essa Meta:</label>
-                <input type="number" id="prazo" name="prazo" min="1" placeholder="Quantidade de meses" required>
+      <label for="prazo">Prazo para Atingir essa Meta:</label>
+      <input type="number" id="prazo" name="prazo" min="1" placeholder="Quantidade de meses" required>
 
-                <div class="buttons">
-                    <button type="submit" class="login">Calcular</button>
-                </div>
-            </form>
+      <div class="buttons">
+        <button type="submit" class="login">Calcular</button>
+      </div>
+    </form>
+  </section>
+  {% endif %}
+  {% if resultado %}
+  <section class="emergencia-resultado-box">
+    <div class="resultado-pro">
+      <img src="/static/img/sacodinheiro.png" alt="Ícone de resultado">
+      <h2 class="titulo-resultado">Resultado</h2>
+      <div class="tabela-resultado">
+        <div class="linha-resultado">
+          <span>Reserva Total Necessária</span>
+          <span class="valor">R$ {{ resultado.reserva_total }}</span>
+        </div>
+        <div class="linha-resultado">
+          <span>Valor Mensal a Guardar</span>
+          <span class="valor">R$ {{ resultado.reserva_mensal }}</span>
+        </div>
+        <div class="linha-resultado">
+          <span>Para cobrir</span>
+          <span class="valor">{{ resultado.meses_cobertura }} meses</span>
+        </div>
+        <div class="linha-resultado">
+          <span>Prazo</span>
+          <span class="valor">{{ resultado.prazo }} meses</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</main>
 
-            {% if resultado %}
-            <div class="card_maior1" style="margin-top: 30px;">
-                <h2 class="destaque">Resultado:</h2>
-                <p><strong>Reserva Total Necessária:</strong> R$ {{ resultado.reserva_total }}</p>
-                <p><strong>Valor Mensal a Guardar:</strong> R$ {{ resultado.reserva_mensal }}</p>
-                <p><strong>Para cobrir:</strong> {{ resultado.meses_cobertura }} meses de despesas</p>
-                <p><strong>Prazo:</strong> {{ resultado.prazo }} meses</p>
-            </div>
-            {% endif %}
-        </section>        
-    </main>
 </body>
 </html>
