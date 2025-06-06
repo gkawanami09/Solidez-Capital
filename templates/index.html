@@ -16,11 +16,10 @@
         <a href="#quem_somos">Quem Somos?</a>
         <a href="#dicas">Dicas</a>
         <a href="#beneficios">Benefícios</a>
-        {% if 'usuario_logado' not in session %}
-        <a class="login" href="{{ url_for('login') }}">Login</a>
-        {% endif %}
         {% if 'usuario_logado' in session %}
         <a href="{{url_for ('painel')}}">Painel</a>
+        {% else %}
+        <a class="login" href="{{ url_for('login') }}">Login</a>
         {% endif %}
       </nav>
     </div>
