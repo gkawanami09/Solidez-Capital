@@ -698,26 +698,25 @@ main {
 }
 
 /* emergencia */
-/* Container principal */
+
 .emergencia-container {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  padding: 10vh 5%;
-  background-color: var(--cor-fundo);
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 20px;
 }
 
-/* Caixa do formulário */
-.emergencia-form-box {
-  background-color: var(--cor-branco);
-  padding: 30px 40px;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  width: 100%;
-  max-width: 500px;
+/* Caixa do formulário e resultado */
+.emergencia-form-box, 
+.emergencia-resultado-box {
+    background-color: var(--cor-branco);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 500px;
 }
-
 /* Caixa do resultado */
 .emergencia-resultado-box {
   background-color: var(--cor-branco);
@@ -730,11 +729,11 @@ main {
 }
 
 .resultado-pro {
-  background-color: var(--cor-branco);
-  padding: 30px 40px;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  text-align: center;
+    background-color: var(--cor-branco);
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
 }
 
 .resultado-pro img {
@@ -831,4 +830,10 @@ main {
     max-width: 100%;
     width: 90%;
   }
+}
+
+.buttons a.login {
+    display: block;
+    text-align: center;
+    text-decoration: none;
 }

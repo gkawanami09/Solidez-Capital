@@ -551,6 +551,8 @@ def emergencia():
 
     return render_template('emergencia.html', resultado=resultado)
 
+
+
 # Iniciar servidor
 if __name__ == '__main__':
     app.run(debug=True)
