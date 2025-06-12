@@ -101,22 +101,20 @@
       <div class="footer-container">
         <div style="display: flex; flex-direction: row;">
         <nav style="font-size: 17.6px;">
-          <a href="#quem_somos">Quem Somos?</a>
-          <a href="#dicas">Dicas</a>
-          <a href="#beneficios">Benefícios</a>
+          <a href="https://www.whatsapp.com/?lang=pt_br" target="_blank"> <img src="/static/img/whatsapp-logo-png_seeklogo-168310.png" alt=" Whatsapp"></a>
+          <a href="https://www.instagram.com/" target="_blank"> <img src="/static/img/insta-logo.png" alt="instagram"> </a>
+          <a href="https://x.com/?lang=pt-br" target="_blank"> <img src="/static/img/twitterx.png" alt="X"> </a>
         </nav>
-        {% if 'usuario_logado' not in session %}
-        <a style="align-self: center;" class="login" href="{{ url_for('login') }}">Login</a>
-        {% endif %}
-        {% if 'usuario_logado' in session %}
-        <a style="align-self: center;" class="login" href="{{ url_for('painel') }}">Painel</a>
-        {% endif %}
-        </div>
+        </div>       
         
         <a href="{{ url_for('index') }}">
           <img src="../static/img/logo.png" alt="Logo da Solidez Capital" />
         </a>
       </div>
+      <hr>
+        <div class="copy">
+          <p> &copy;2025 - Todos os Direitos Reservados - Solidez Capital</p>
+        </div>
     </footer>
 </body>
 </html>
